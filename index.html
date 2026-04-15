@@ -1,454 +1,1809 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Squeeze IDE — Roblox AI Scripting</title>
-<script src="https://js.puter.com/v2/"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-:root {
-  --bg: #0e0e12; --bg2: #14141b; --bg3: #1a1a24; --bg4: #22222f; --bg5: #2a2a3a;
-  --border: #2a2a3a; --border2: #3a3a50;
-  --lime: #a8e44d; --lime2: #8dc43a; --lime-dim: rgba(168,228,77,0.10); --lime-glow: rgba(168,228,77,0.20);
-  --purple: #8b7af7; --purple-dim: rgba(139,122,247,0.12);
-  --blue: #60a5fa; --blue-dim: rgba(96,165,250,0.12);
-  --orange: #f59e0b; --orange-dim: rgba(245,158,11,0.12);
-  --red: #f46d6d; --red-dim: rgba(244,109,109,0.10);
-  --green: #34d399; --green-dim: rgba(52,211,153,0.12);
-  --text: #e4e4f0; --text-dim: #8888a0; --text-muted: #555570;
-  --code-bg: #0b0b10;
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overflow:hidden}
-body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;display:flex;flex-direction:column}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Squeeze IDE — Roblox AI Scripting</title>
+  <script src="https://js.puter.com/v2/"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0e0e12;
+      --bg2: #14141b;
+      --bg3: #1a1a24;
+      --bg4: #22222f;
+      --bg5: #2a2a3a;
+      --border: #2a2a3a;
+      --border2: #3a3a50;
+      --lime: #a8e44d;
+      --lime2: #8dc43a;
+      --lime-dim: rgba(168, 228, 77, 0.10);
+      --lime-glow: rgba(168, 228, 77, 0.20);
+      --purple: #8b7af7;
+      --purple-dim: rgba(139, 122, 247, 0.12);
+      --blue: #60a5fa;
+      --blue-dim: rgba(96, 165, 250, 0.12);
+      --orange: #f59e0b;
+      --orange-dim: rgba(245, 158, 11, 0.12);
+      --red: #f46d6d;
+      --red-dim: rgba(244, 109, 109, 0.10);
+      --green: #34d399;
+      --green-dim: rgba(52, 211, 153, 0.12);
+      --text: #e4e4f0;
+      --text-dim: #8888a0;
+      --text-muted: #555570;
+      --code-bg: #0b0b10;
+    }
 
-/* TOPBAR */
-.topbar{height:42px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 12px;gap:8px;flex-shrink:0;z-index:100}
-.logo{font-weight:800;font-size:14px;color:var(--lime);display:flex;align-items:center;gap:4px;text-decoration:none}
-.logo-icon{width:22px;height:22px;background:var(--lime);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:12px}
-.sep{width:1px;height:20px;background:var(--border)}
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
 
-/* dropdowns */
-.sq-select{background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:11px;font-family:'JetBrains Mono',monospace;padding:4px 8px;cursor:pointer;outline:none;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23555570'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 6px center;padding-right:20px;max-width:180px;text-overflow:ellipsis}
-.sq-select:focus{border-color:var(--lime)}
-.sq-select.compact{max-width:140px;font-size:10px;padding:3px 18px 3px 6px}
+    html,
+    body {
+      height: 100%;
+      overflow: hidden
+    }
 
-.topbar-file{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);display:flex;align-items:center;gap:4px;min-width:0}
-.modified-dot{width:6px;height:6px;border-radius:50%;background:var(--orange);display:none;flex-shrink:0}
-.topbar-spacer{flex:1}
-.files-modified{font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--orange);background:var(--orange-dim);border:1px solid rgba(245,158,11,0.25);border-radius:5px;padding:2px 8px;display:none;align-items:center;gap:4px}
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      flex-direction: column
+    }
 
-.rojo-indicator{display:flex;align-items:center;gap:5px;font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--text-muted);padding:3px 8px;border-radius:5px;background:var(--bg3);border:1px solid var(--border);cursor:pointer}
-.rojo-indicator .dot{width:5px;height:5px;border-radius:50%;background:var(--text-muted)}
-.rojo-indicator.on .dot{background:var(--lime);box-shadow:0 0 5px var(--lime)}
-.rojo-indicator.on{border-color:rgba(168,228,77,0.25);color:var(--lime)}
+    /* TOPBAR */
+    .topbar {
+      height: 42px;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      gap: 8px;
+      flex-shrink: 0;
+      z-index: 100
+    }
 
-.tb{background:var(--bg4);border:1px solid var(--border);border-radius:6px;color:var(--text-dim);font-size:10px;font-family:'Inter',sans-serif;padding:4px 10px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:4px}
-.tb:hover{border-color:var(--border2);color:var(--text)}
+    .logo {
+      font-weight: 800;
+      font-size: 14px;
+      color: var(--lime);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      text-decoration: none
+    }
 
-/* MAIN LAYOUT */
-.main{display:flex;flex:1;overflow:hidden}
+    .logo-icon {
+      width: 22px;
+      height: 22px;
+      background: var(--lime);
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px
+    }
 
-/* FILE EXPLORER */
-.explorer{width:200px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
-.exp-head{padding:8px 10px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:4px}
-.exp-head span{flex:1}
-.exp-btn{background:none;border:none;color:var(--text-muted);cursor:pointer;padding:2px;border-radius:3px;font-size:12px;display:flex}
-.exp-btn:hover{color:var(--text);background:var(--bg4)}
-.ftree{flex:1;overflow-y:auto;padding:4px 0}
-.fi{display:flex;align-items:center;gap:5px;padding:3px 10px;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text-dim);cursor:pointer;transition:all .1s;user-select:none}
-.fi:hover{background:var(--bg3);color:var(--text)}
-.fi.active{background:var(--lime-dim);color:var(--lime)}
-.fi.dir{font-weight:600}
-.fi.ai-created .fi-name{color:var(--lime)}
-.fi.ai-modified .fi-name{color:var(--orange)}
-.fi-icon{font-size:12px;flex-shrink:0;width:16px;text-align:center}
-.fi-indent{width:12px;flex-shrink:0}
-.fi-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.fi-badge{font-size:7px;padding:1px 4px;border-radius:3px;font-weight:700;flex-shrink:0}
-.fi-badge.new{background:var(--lime-dim);color:var(--lime);border:1px solid rgba(168,228,77,0.25)}
-.fi-badge.mod{background:var(--orange-dim);color:var(--orange);border:1px solid rgba(245,158,11,0.25)}
-.exp-empty{padding:16px 10px;text-align:center;font-size:10px;color:var(--text-muted);line-height:1.6}
-.conn-btn{margin-top:8px;background:var(--bg4);border:1px solid var(--lime);border-radius:7px;color:var(--lime);font-size:10px;font-weight:600;padding:7px 12px;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:4px;transition:all .15s}
-.conn-btn:hover{background:var(--lime-dim)}
+    .sep {
+      width: 1px;
+      height: 20px;
+      background: var(--border)
+    }
 
-/* EDITOR AREA */
-.ed-area{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--code-bg);min-width:0}
-.ed-tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;flex-shrink:0}
-.ed-tabs::-webkit-scrollbar{height:0}
-.ed-tab{padding:6px 12px;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text-muted);cursor:pointer;border-right:1px solid var(--border);display:flex;align-items:center;gap:6px;white-space:nowrap;flex-shrink:0;position:relative;transition:all .1s}
-.ed-tab:hover{background:var(--bg3);color:var(--text-dim)}
-.ed-tab.active{background:var(--code-bg);color:var(--text);border-bottom:2px solid var(--lime)}
-.tab-x{font-size:12px;opacity:0;border:none;background:none;color:var(--text-muted);cursor:pointer;padding:0 1px;border-radius:2px;line-height:1}
-.ed-tab:hover .tab-x{opacity:1}
-.tab-x:hover{color:var(--red);background:var(--red-dim)}
-.tab-dot{width:6px;height:6px;border-radius:50%;background:var(--orange)}
+    /* dropdowns */
+    .sq-select {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 4px 8px;
+      cursor: pointer;
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23555570'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 6px center;
+      padding-right: 20px;
+      max-width: 180px;
+      text-overflow: ellipsis
+    }
 
-.ai-banner{background:var(--blue-dim);border:1px solid rgba(96,165,250,0.2);padding:6px 14px;font-size:11px;color:var(--blue);display:none;align-items:center;gap:6px;flex-shrink:0}
-.ai-banner.show{display:flex}
-.ai-banner .bt{flex:0}
+    .sq-select:focus {
+      border-color: var(--lime)
+    }
 
-.ed-wrap{flex:1;overflow:hidden;position:relative}
-#monaco-editor{width:100%;height:100%}
-.empty-ed{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;color:var(--text-muted);padding:20px}
-.empty-ed-icon{width:48px;height:48px;background:var(--lime-dim);border:1px solid rgba(168,228,77,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px}
-.empty-ed h3{font-weight:700;font-size:15px;color:var(--text-dim)}
-.empty-ed p{font-size:11px;max-width:280px;line-height:1.6}
+    .sq-select.compact {
+      max-width: 140px;
+      font-size: 10px;
+      padding: 3px 18px 3px 6px
+    }
 
-.vbar{background:var(--bg2);border-top:1px solid var(--border);padding:4px 12px;display:flex;align-items:center;gap:10px;font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--text-muted);flex-shrink:0}
-.vbar .sp{flex:1}
-.vb{background:var(--bg4);border:1px solid var(--border);border-radius:4px;color:var(--text-dim);font-size:9px;font-family:'JetBrains Mono',monospace;padding:2px 8px;cursor:pointer;transition:all .12s;display:flex;align-items:center;gap:3px}
-.vb:hover{border-color:var(--border2);color:var(--text)}
-.vb.accept{border-color:rgba(52,211,153,0.4);color:var(--green)}
-.vb.reject{border-color:rgba(244,109,109,0.4);color:var(--red)}
-.vb.primary{background:var(--lime-dim);border-color:rgba(168,228,77,0.3);color:var(--lime)}
+    .topbar-file {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      min-width: 0
+    }
 
-/* CHAT SIDEBAR */
-.chat{width:340px;background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
-.ch-head{padding:8px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px;flex-shrink:0}
-.ch-title{font-weight:700;font-size:12px;flex:1}
-.ch-ibtn{background:none;border:1px solid transparent;color:var(--text-muted);padding:3px;cursor:pointer;border-radius:4px;display:flex;transition:all .1s;font-size:12px}
-.ch-ibtn:hover{border-color:var(--border);color:var(--text);background:var(--bg4)}
+    .modified-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--orange);
+      display: none;
+      flex-shrink: 0
+    }
 
-.ch-msgs{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:8px}
-.ch-msgs::-webkit-scrollbar{width:3px}
-.ch-msgs::-webkit-scrollbar-track{background:transparent}
-.ch-msgs::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+    .topbar-spacer {
+      flex: 1
+    }
 
-.m{display:flex;gap:7px;align-items:flex-start;animation:fu .2s ease}
-@keyframes fu{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
-.m.u{flex-direction:row-reverse}
-.m-av{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace}
-.m-av.ai{background:var(--lime-dim);border:1px solid rgba(168,228,77,0.2);color:var(--lime)}
-.m-av.us{background:var(--purple-dim);border:1px solid rgba(139,122,247,0.2);color:var(--purple)}
-.m-body{max-width:88%;min-width:0}
-.m.u .m-body{display:flex;flex-direction:column;align-items:flex-end}
-.m-bub{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:7px 10px;font-size:12px;line-height:1.6;white-space:pre-wrap;word-break:break-word}
-.m.u .m-bub{background:var(--purple-dim);border-color:rgba(139,122,247,0.2)}
-.m-bub code{font-family:'JetBrains Mono',monospace;background:var(--code-bg);border:1px solid var(--border);border-radius:3px;padding:0 3px;font-size:10px;color:var(--lime)}
-.m-time{font-size:8px;color:var(--text-muted);margin-top:2px;font-family:'JetBrains Mono',monospace}
+    .files-modified {
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--orange);
+      background: var(--orange-dim);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      border-radius: 5px;
+      padding: 2px 8px;
+      display: none;
+      align-items: center;
+      gap: 4px
+    }
 
-/* Message actions */
-.m-actions{display:flex;gap:3px;margin-top:3px;opacity:0;transition:opacity .15s}
-.m:hover .m-actions{opacity:1}
-.m-act{background:none;border:1px solid var(--border);border-radius:4px;color:var(--text-muted);font-size:9px;padding:2px 6px;cursor:pointer;display:flex;align-items:center;gap:2px;transition:all .12s;font-family:'JetBrains Mono',monospace}
-.m-act:hover{border-color:var(--border2);color:var(--text);background:var(--bg4)}
-.m-act.liked{color:var(--lime);border-color:rgba(168,228,77,0.3)}
-.m-act.disliked{color:var(--red);border-color:rgba(244,109,109,0.3)}
+    .rojo-indicator {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-muted);
+      padding: 3px 8px;
+      border-radius: 5px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      cursor: pointer
+    }
 
-/* Files modified badge in messages */
-.m-files{margin-top:4px;font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--orange);display:flex;align-items:center;gap:4px}
+    .rojo-indicator .dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--text-muted)
+    }
 
-/* File operation cards in chat (replaces code blocks) */
-.file-op-card{background:var(--bg3);border:1px solid var(--border);border-radius:8px;margin-top:6px;overflow:hidden;cursor:pointer;transition:all .15s}
-.file-op-card:hover{border-color:var(--lime);background:var(--bg4)}
-.file-op-card-head{display:flex;align-items:center;gap:8px;padding:8px 12px}
-.file-op-icon{font-size:16px}
-.file-op-info{flex:1;min-width:0}
-.file-op-name{font-size:11px;font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.file-op-path{font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--text-muted);margin-top:1px}
-.file-op-badge{font-size:8px;padding:2px 6px;border-radius:4px;font-weight:700;flex-shrink:0}
-.file-op-badge.created{background:var(--lime-dim);color:var(--lime);border:1px solid rgba(168,228,77,0.2)}
-.file-op-badge.modified{background:var(--orange-dim);color:var(--orange);border:1px solid rgba(245,158,11,0.2)}
-.file-op-lines{font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--text-muted);padding:0 12px 8px;display:flex;gap:8px}
-.file-ops-summary{margin-top:8px;padding:8px 12px;background:var(--lime-dim);border:1px solid rgba(168,228,77,0.15);border-radius:8px;font-size:11px;color:var(--lime);display:flex;align-items:center;gap:6px;font-weight:600}
+    .rojo-indicator.on .dot {
+      background: var(--lime);
+      box-shadow: 0 0 5px var(--lime)
+    }
 
-/* Thinking indicator */
-.thinking-wrap{margin-top:4px;border:1px solid var(--border);border-radius:6px;overflow:hidden}
-.thinking-header{display:flex;align-items:center;gap:5px;padding:5px 8px;background:var(--bg4);cursor:pointer;font-size:10px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;user-select:none}
-.thinking-header .th-icon{transition:transform .2s}
-.thinking-header.open .th-icon{transform:rotate(90deg)}
-.thinking-dots{display:flex;gap:3px;margin-left:auto}
-.th-dot{width:4px;height:4px;background:var(--purple);border-radius:50%;animation:bounce 1.2s infinite}
-.th-dot:nth-child(2){animation-delay:.2s}
-.th-dot:nth-child(3){animation-delay:.4s}
-@keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-4px);opacity:1}}
-.thinking-body{padding:6px 8px;font-size:10px;color:var(--text-muted);line-height:1.5;font-family:'JetBrains Mono',monospace;display:none;white-space:pre-wrap;max-height:120px;overflow-y:auto;border-top:1px solid var(--border);background:var(--bg3)}
-.thinking-body.open{display:block}
+    .rojo-indicator.on {
+      border-color: rgba(168, 228, 77, 0.25);
+      color: var(--lime)
+    }
 
-/* code blocks in chat */
-.cc-block{background:var(--code-bg);border:1px solid var(--border);border-radius:6px;margin-top:4px;overflow:hidden}
-.cc-head{background:var(--bg3);border-bottom:1px solid var(--border);padding:4px 8px;display:flex;align-items:center;gap:5px;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted)}
-.cc-lang{color:var(--lime);font-weight:700}
-.cc-acts{margin-left:auto;display:flex;gap:3px}
-.cc-btn{background:var(--bg4);border:1px solid var(--border);border-radius:3px;color:var(--text-dim);font-size:8px;font-family:'JetBrains Mono',monospace;padding:2px 6px;cursor:pointer;transition:all .12s}
-.cc-btn:hover{border-color:var(--lime);color:var(--lime)}
-.cc-btn.apply{border-color:rgba(52,211,153,0.3);color:var(--green)}
-.cc-btn.apply:hover{background:var(--green-dim)}
-.cc-code{padding:8px;font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.6;color:#c8d0e0;overflow-x:auto;white-space:pre;max-height:220px;overflow-y:auto}
-.kw{color:#c084fc}.str{color:#86efac}.num{color:#fb923c}.cmt{color:#6b7280;font-style:italic}.fn-name{color:#60a5fa}.builtin{color:var(--lime)}
+    .tb {
+      background: var(--bg4);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-dim);
+      font-size: 10px;
+      font-family: 'Inter', sans-serif;
+      padding: 4px 10px;
+      cursor: pointer;
+      transition: all .15s;
+      display: flex;
+      align-items: center;
+      gap: 4px
+    }
 
-/* Typing */
-.typ-ind{display:flex;gap:3px;padding:8px 10px;align-items:center}
-.td{width:4px;height:4px;background:var(--lime);border-radius:50%;animation:bounce 1.2s infinite}
-.td:nth-child(2){animation-delay:.2s}.td:nth-child(3){animation-delay:.4s}
+    .tb:hover {
+      border-color: var(--border2);
+      color: var(--text)
+    }
 
-/* Chat input */
-.ch-in{padding:8px 10px;border-top:1px solid var(--border);flex-shrink:0}
-.ch-row{background:var(--bg3);border:1px solid var(--border);border-radius:8px;display:flex;align-items:flex-end;gap:5px;padding:7px 9px;transition:border-color .2s}
-.ch-row:focus-within{border-color:var(--lime)}
-#ci{flex:1;background:none;border:none;outline:none;color:var(--text);font-family:'Inter',sans-serif;font-size:12px;resize:none;max-height:100px;min-height:16px;line-height:1.5}
-#ci::placeholder{color:var(--text-muted)}
-.ch-send{background:var(--lime);border:none;border-radius:6px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .12s;color:#1a1a00}
-.ch-send:hover{background:var(--lime2);transform:scale(1.05)}
-.ch-send:disabled{background:var(--bg4);color:var(--text-muted);cursor:not-allowed;transform:none}
-.ch-model{margin-top:6px;display:flex;gap:4px;align-items:center}
+    /* MAIN LAYOUT */
+    .main {
+      display: flex;
+      flex: 1;
+      overflow: hidden
+    }
 
-/* STATUS BAR */
-.sbar{height:22px;background:var(--bg3);border-top:1px solid var(--border);display:flex;align-items:center;padding:0 10px;font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--text-muted);gap:12px;flex-shrink:0}
-.sbar .sp{flex:1}
-.s-mode{padding:1px 6px;border-radius:3px;font-weight:600;font-size:9px}
-.s-mode[data-m="agentic"]{background:var(--lime-dim);color:var(--lime)}
-.s-mode[data-m="planning"]{background:var(--blue-dim);color:var(--blue)}
-.s-mode[data-m="debugging"]{background:var(--orange-dim);color:var(--orange)}
+    /* FILE EXPLORER */
+    .explorer {
+      width: 200px;
+      background: var(--bg2);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      overflow: hidden
+    }
 
-/* MODAL */
-.mo{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(3px);z-index:200;display:none;align-items:center;justify-content:center}
-.mo.open{display:flex}
-.modal{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px;width:480px;max-width:92vw;max-height:82vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.5);animation:mIn .2s ease}
-@keyframes mIn{from{opacity:0;transform:scale(.95) translateY(6px)}to{opacity:1;transform:scale(1) translateY(0)}}
-.mt{font-weight:800;font-size:15px;margin-bottom:3px;color:var(--lime)}
-.md{font-size:11px;color:var(--text-dim);margin-bottom:14px;line-height:1.6}
-.mf{margin-bottom:12px}
-.mf label{font-size:9px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px;display:block}
-.mf input,.mf textarea,.mf select{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:11px;padding:7px 10px;outline:none}
-.mf input:focus,.mf textarea:focus,.mf select:focus{border-color:var(--lime)}
-.mf .hint{font-size:9px;color:var(--text-muted);margin-top:3px}
-.mf .hint a{color:var(--lime);text-decoration:none}
-.macts{display:flex;gap:6px;margin-top:14px}
-.mbtn{flex:1;background:var(--bg4);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:11px;padding:8px;cursor:pointer;transition:all .15s}
-.mbtn:hover{border-color:var(--border2)}
-.mbtn.pri{background:var(--lime);border-color:var(--lime);color:#1a1a00;font-weight:700}
-.mbtn.pri:hover{background:var(--lime2)}
+    .exp-head {
+      padding: 8px 10px;
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 4px
+    }
 
-/* Tutorial step */
-.tut-step{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px;display:flex;gap:10px;align-items:flex-start}
-.tut-num{width:24px;height:24px;border-radius:7px;background:var(--lime);color:#1a1a00;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Inter',sans-serif}
-.tut-body{flex:1}
-.tut-title{font-weight:700;font-size:12px;margin-bottom:3px}
-.tut-desc{font-size:11px;color:var(--text-dim);line-height:1.5}
-.tut-code{margin-top:6px;background:var(--code-bg);border:1px solid var(--border);border-radius:5px;padding:8px 10px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--lime);overflow-x:auto;white-space:pre}
+    .exp-head span {
+      flex: 1
+    }
 
-/* Version list */
-.vl-item{padding:8px;border:1px solid var(--border);border-radius:6px;margin-bottom:4px;cursor:pointer;transition:all .1s;display:flex;align-items:center;gap:8px}
-.vl-item:hover{border-color:var(--border2);background:var(--bg3)}
-.vl-meta{flex:1}.vl-time{font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--text-dim)}.vl-label{font-size:9px;color:var(--text-muted);margin-top:1px}
-.vl-restore{background:var(--bg4);border:1px solid var(--lime);border-radius:4px;color:var(--lime);font-size:9px;padding:3px 7px;cursor:pointer;font-family:'JetBrains Mono',monospace}
-.vl-restore:hover{background:var(--lime-dim)}
+    .exp-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 2px;
+      border-radius: 3px;
+      font-size: 12px;
+      display: flex
+    }
 
-::-webkit-scrollbar{width:3px;height:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-#toast{position:fixed;bottom:-50px;left:50%;transform:translateX(-50%);background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 16px;display:flex;align-items:center;gap:6px;font-size:11px;font-family:'JetBrains Mono',monospace;z-index:300;transition:bottom .3s ease;box-shadow:0 4px 20px rgba(0,0,0,.4)}
-#toast.show{bottom:36px}
-#toast.success #ti{color:var(--green)}
-#toast.error #ti{color:var(--red)}
-.s-save{cursor:pointer;transition:all .15s;padding:1px 6px;border-radius:3px;display:flex;align-items:center;gap:3px}
-.s-save.saved{color:var(--green)}
-.s-save.unsaved{color:var(--orange);background:var(--orange-dim)}
-.multi-agent-tag{font-size:8px;background:var(--purple-dim);border:1px solid rgba(139,122,247,0.2);color:var(--purple);padding:1px 4px;border-radius:3px;font-family:'JetBrains Mono',monospace}
-.mercury-tag{font-size:8px;background:var(--blue-dim);border:1px solid rgba(96,165,250,0.2);color:var(--blue);padding:1px 4px;border-radius:3px;font-family:'JetBrains Mono',monospace}
-</style>
+    .exp-btn:hover {
+      color: var(--text);
+      background: var(--bg4)
+    }
+
+    .ftree {
+      flex: 1;
+      overflow-y: auto;
+      padding: 4px 0
+    }
+
+    .fi {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: all .1s;
+      user-select: none
+    }
+
+    .fi:hover {
+      background: var(--bg3);
+      color: var(--text)
+    }
+
+    .fi.active {
+      background: var(--lime-dim);
+      color: var(--lime)
+    }
+
+    .fi.dir {
+      font-weight: 600
+    }
+
+    .fi.ai-created .fi-name {
+      color: var(--lime)
+    }
+
+    .fi.ai-modified .fi-name {
+      color: var(--orange)
+    }
+
+    .fi-icon {
+      font-size: 12px;
+      flex-shrink: 0;
+      width: 16px;
+      text-align: center
+    }
+
+    .fi-indent {
+      width: 12px;
+      flex-shrink: 0
+    }
+
+    .fi-name {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap
+    }
+
+    .fi-badge {
+      font-size: 7px;
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-weight: 700;
+      flex-shrink: 0
+    }
+
+    .fi-badge.new {
+      background: var(--lime-dim);
+      color: var(--lime);
+      border: 1px solid rgba(168, 228, 77, 0.25)
+    }
+
+    .fi-badge.mod {
+      background: var(--orange-dim);
+      color: var(--orange);
+      border: 1px solid rgba(245, 158, 11, 0.25)
+    }
+
+    .exp-empty {
+      padding: 16px 10px;
+      text-align: center;
+      font-size: 10px;
+      color: var(--text-muted);
+      line-height: 1.6
+    }
+
+    .conn-btn {
+      margin-top: 8px;
+      background: var(--bg4);
+      border: 1px solid var(--lime);
+      border-radius: 7px;
+      color: var(--lime);
+      font-size: 10px;
+      font-weight: 600;
+      padding: 7px 12px;
+      cursor: pointer;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: all .15s
+    }
+
+    .conn-btn:hover {
+      background: var(--lime-dim)
+    }
+
+    /* EDITOR AREA */
+    .ed-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--code-bg);
+      min-width: 0
+    }
+
+    .ed-tabs {
+      display: flex;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+      flex-shrink: 0
+    }
+
+    .ed-tabs::-webkit-scrollbar {
+      height: 0
+    }
+
+    .ed-tab {
+      padding: 6px 12px;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-right: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      position: relative;
+      transition: all .1s
+    }
+
+    .ed-tab:hover {
+      background: var(--bg3);
+      color: var(--text-dim)
+    }
+
+    .ed-tab.active {
+      background: var(--code-bg);
+      color: var(--text);
+      border-bottom: 2px solid var(--lime)
+    }
+
+    .tab-x {
+      font-size: 12px;
+      opacity: 0;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 0 1px;
+      border-radius: 2px;
+      line-height: 1
+    }
+
+    .ed-tab:hover .tab-x {
+      opacity: 1
+    }
+
+    .tab-x:hover {
+      color: var(--red);
+      background: var(--red-dim)
+    }
+
+    .tab-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--orange)
+    }
+
+    .ai-banner {
+      background: var(--blue-dim);
+      border: 1px solid rgba(96, 165, 250, 0.2);
+      padding: 6px 14px;
+      font-size: 11px;
+      color: var(--blue);
+      display: none;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0
+    }
+
+    .ai-banner.show {
+      display: flex
+    }
+
+    .ai-banner .bt {
+      flex: 0
+    }
+
+    .ed-wrap {
+      flex: 1;
+      overflow: hidden;
+      position: relative
+    }
+
+    #monaco-editor {
+      width: 100%;
+      height: 100%
+    }
+
+    .empty-ed {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      text-align: center;
+      color: var(--text-muted);
+      padding: 20px
+    }
+
+    .empty-ed-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--lime-dim);
+      border: 1px solid rgba(168, 228, 77, 0.2);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px
+    }
+
+    .empty-ed h3 {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--text-dim)
+    }
+
+    .empty-ed p {
+      font-size: 11px;
+      max-width: 280px;
+      line-height: 1.6
+    }
+
+    .vbar {
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      padding: 4px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-muted);
+      flex-shrink: 0
+    }
+
+    .vbar .sp {
+      flex: 1
+    }
+
+    .vb {
+      background: var(--bg4);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text-dim);
+      font-size: 9px;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 2px 8px;
+      cursor: pointer;
+      transition: all .12s;
+      display: flex;
+      align-items: center;
+      gap: 3px
+    }
+
+    .vb:hover {
+      border-color: var(--border2);
+      color: var(--text)
+    }
+
+    .vb.accept {
+      border-color: rgba(52, 211, 153, 0.4);
+      color: var(--green)
+    }
+
+    .vb.reject {
+      border-color: rgba(244, 109, 109, 0.4);
+      color: var(--red)
+    }
+
+    .vb.primary {
+      background: var(--lime-dim);
+      border-color: rgba(168, 228, 77, 0.3);
+      color: var(--lime)
+    }
+
+    /* CHAT SIDEBAR */
+    .chat {
+      width: 340px;
+      background: var(--bg2);
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      overflow: hidden
+    }
+
+    .ch-head {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0
+    }
+
+    .ch-title {
+      font-weight: 700;
+      font-size: 12px;
+      flex: 1
+    }
+
+    .ch-ibtn {
+      background: none;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      padding: 3px;
+      cursor: pointer;
+      border-radius: 4px;
+      display: flex;
+      transition: all .1s;
+      font-size: 12px
+    }
+
+    .ch-ibtn:hover {
+      border-color: var(--border);
+      color: var(--text);
+      background: var(--bg4)
+    }
+
+    .ch-msgs {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px
+    }
+
+    .ch-msgs::-webkit-scrollbar {
+      width: 3px
+    }
+
+    .ch-msgs::-webkit-scrollbar-track {
+      background: transparent
+    }
+
+    .ch-msgs::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 2px
+    }
+
+    .m {
+      display: flex;
+      gap: 7px;
+      align-items: flex-start;
+      animation: fu .2s ease
+    }
+
+    @keyframes fu {
+      from {
+        opacity: 0;
+        transform: translateY(5px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .m.u {
+      flex-direction: row-reverse
+    }
+
+    .m-av {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 11px;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace
+    }
+
+    .m-av.ai {
+      background: var(--lime-dim);
+      border: 1px solid rgba(168, 228, 77, 0.2);
+      color: var(--lime)
+    }
+
+    .m-av.us {
+      background: var(--purple-dim);
+      border: 1px solid rgba(139, 122, 247, 0.2);
+      color: var(--purple)
+    }
+
+    .m-body {
+      max-width: 88%;
+      min-width: 0
+    }
+
+    .m.u .m-body {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end
+    }
+
+    .m-bub {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 10px;
+      font-size: 12px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word
+    }
+
+    .m.u .m-bub {
+      background: var(--purple-dim);
+      border-color: rgba(139, 122, 247, 0.2)
+    }
+
+    .m-bub code {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 0 3px;
+      font-size: 10px;
+      color: var(--lime)
+    }
+
+    .m-time {
+      font-size: 8px;
+      color: var(--text-muted);
+      margin-top: 2px;
+      font-family: 'JetBrains Mono', monospace
+    }
+
+    /* Message actions */
+    .m-actions {
+      display: flex;
+      gap: 3px;
+      margin-top: 3px;
+      opacity: 0;
+      transition: opacity .15s
+    }
+
+    .m:hover .m-actions {
+      opacity: 1
+    }
+
+    .m-act {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text-muted);
+      font-size: 9px;
+      padding: 2px 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      transition: all .12s;
+      font-family: 'JetBrains Mono', monospace
+    }
+
+    .m-act:hover {
+      border-color: var(--border2);
+      color: var(--text);
+      background: var(--bg4)
+    }
+
+    .m-act.liked {
+      color: var(--lime);
+      border-color: rgba(168, 228, 77, 0.3)
+    }
+
+    .m-act.disliked {
+      color: var(--red);
+      border-color: rgba(244, 109, 109, 0.3)
+    }
+
+    /* Files modified badge in messages */
+    .m-files {
+      margin-top: 4px;
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--orange);
+      display: flex;
+      align-items: center;
+      gap: 4px
+    }
+
+    /* File operation cards in chat (replaces code blocks) */
+    .file-op-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-top: 6px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all .15s
+    }
+
+    .file-op-card:hover {
+      border-color: var(--lime);
+      background: var(--bg4)
+    }
+
+    .file-op-card-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px
+    }
+
+    .file-op-icon {
+      font-size: 16px
+    }
+
+    .file-op-info {
+      flex: 1;
+      min-width: 0
+    }
+
+    .file-op-name {
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      color: var(--text);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap
+    }
+
+    .file-op-path {
+      font-size: 9px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-muted);
+      margin-top: 1px
+    }
+
+    .file-op-badge {
+      font-size: 8px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 700;
+      flex-shrink: 0
+    }
+
+    .file-op-badge.created {
+      background: var(--lime-dim);
+      color: var(--lime);
+      border: 1px solid rgba(168, 228, 77, 0.2)
+    }
+
+    .file-op-badge.modified {
+      background: var(--orange-dim);
+      color: var(--orange);
+      border: 1px solid rgba(245, 158, 11, 0.2)
+    }
+
+    .file-op-lines {
+      font-size: 9px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-muted);
+      padding: 0 12px 8px;
+      display: flex;
+      gap: 8px
+    }
+
+    .file-ops-summary {
+      margin-top: 8px;
+      padding: 8px 12px;
+      background: var(--lime-dim);
+      border: 1px solid rgba(168, 228, 77, 0.15);
+      border-radius: 8px;
+      font-size: 11px;
+      color: var(--lime);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600
+    }
+
+    /* Thinking indicator */
+    .thinking-wrap {
+      margin-top: 4px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden
+    }
+
+    .thinking-header {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 8px;
+      background: var(--bg4);
+      cursor: pointer;
+      font-size: 10px;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      user-select: none
+    }
+
+    .thinking-header .th-icon {
+      transition: transform .2s
+    }
+
+    .thinking-header.open .th-icon {
+      transform: rotate(90deg)
+    }
+
+    .thinking-dots {
+      display: flex;
+      gap: 3px;
+      margin-left: auto
+    }
+
+    .th-dot {
+      width: 4px;
+      height: 4px;
+      background: var(--purple);
+      border-radius: 50%;
+      animation: bounce 1.2s infinite
+    }
+
+    .th-dot:nth-child(2) {
+      animation-delay: .2s
+    }
+
+    .th-dot:nth-child(3) {
+      animation-delay: .4s
+    }
+
+    @keyframes bounce {
+
+      0%,
+      60%,
+      100% {
+        transform: translateY(0);
+        opacity: .4
+      }
+
+      30% {
+        transform: translateY(-4px);
+        opacity: 1
+      }
+    }
+
+    .thinking-body {
+      padding: 6px 8px;
+      font-size: 10px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      font-family: 'JetBrains Mono', monospace;
+      display: none;
+      white-space: pre-wrap;
+      max-height: 120px;
+      overflow-y: auto;
+      border-top: 1px solid var(--border);
+      background: var(--bg3)
+    }
+
+    .thinking-body.open {
+      display: block
+    }
+
+    /* code blocks in chat */
+    .cc-block {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      margin-top: 4px;
+      overflow: hidden
+    }
+
+    .cc-head {
+      background: var(--bg3);
+      border-bottom: 1px solid var(--border);
+      padding: 4px 8px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      color: var(--text-muted)
+    }
+
+    .cc-lang {
+      color: var(--lime);
+      font-weight: 700
+    }
+
+    .cc-acts {
+      margin-left: auto;
+      display: flex;
+      gap: 3px
+    }
+
+    .cc-btn {
+      background: var(--bg4);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      color: var(--text-dim);
+      font-size: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 2px 6px;
+      cursor: pointer;
+      transition: all .12s
+    }
+
+    .cc-btn:hover {
+      border-color: var(--lime);
+      color: var(--lime)
+    }
+
+    .cc-btn.apply {
+      border-color: rgba(52, 211, 153, 0.3);
+      color: var(--green)
+    }
+
+    .cc-btn.apply:hover {
+      background: var(--green-dim)
+    }
+
+    .cc-code {
+      padding: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      line-height: 1.6;
+      color: #c8d0e0;
+      overflow-x: auto;
+      white-space: pre;
+      max-height: 220px;
+      overflow-y: auto
+    }
+
+    .kw {
+      color: #c084fc
+    }
+
+    .str {
+      color: #86efac
+    }
+
+    .num {
+      color: #fb923c
+    }
+
+    .cmt {
+      color: #6b7280;
+      font-style: italic
+    }
+
+    .fn-name {
+      color: #60a5fa
+    }
+
+    .builtin {
+      color: var(--lime)
+    }
+
+    /* Typing */
+    .typ-ind {
+      display: flex;
+      gap: 3px;
+      padding: 8px 10px;
+      align-items: center
+    }
+
+    .td {
+      width: 4px;
+      height: 4px;
+      background: var(--lime);
+      border-radius: 50%;
+      animation: bounce 1.2s infinite
+    }
+
+    .td:nth-child(2) {
+      animation-delay: .2s
+    }
+
+    .td:nth-child(3) {
+      animation-delay: .4s
+    }
+
+    /* Chat input */
+    .ch-in {
+      padding: 8px 10px;
+      border-top: 1px solid var(--border);
+      flex-shrink: 0
+    }
+
+    .ch-row {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex;
+      align-items: flex-end;
+      gap: 5px;
+      padding: 7px 9px;
+      transition: border-color .2s
+    }
+
+    .ch-row:focus-within {
+      border-color: var(--lime)
+    }
+
+    #ci {
+      flex: 1;
+      background: none;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      resize: none;
+      max-height: 100px;
+      min-height: 16px;
+      line-height: 1.5
+    }
+
+    #ci::placeholder {
+      color: var(--text-muted)
+    }
+
+    .ch-send {
+      background: var(--lime);
+      border: none;
+      border-radius: 6px;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all .12s;
+      color: #1a1a00
+    }
+
+    .ch-send:hover {
+      background: var(--lime2);
+      transform: scale(1.05)
+    }
+
+    .ch-send:disabled {
+      background: var(--bg4);
+      color: var(--text-muted);
+      cursor: not-allowed;
+      transform: none
+    }
+
+    .ch-model {
+      margin-top: 6px;
+      display: flex;
+      gap: 4px;
+      align-items: center
+    }
+
+    /* STATUS BAR */
+    .sbar {
+      height: 22px;
+      background: var(--bg3);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-muted);
+      gap: 12px;
+      flex-shrink: 0
+    }
+
+    .sbar .sp {
+      flex: 1
+    }
+
+    .s-mode {
+      padding: 1px 6px;
+      border-radius: 3px;
+      font-weight: 600;
+      font-size: 9px
+    }
+
+    .s-mode[data-m="agentic"] {
+      background: var(--lime-dim);
+      color: var(--lime)
+    }
+
+    .s-mode[data-m="planning"] {
+      background: var(--blue-dim);
+      color: var(--blue)
+    }
+
+    .s-mode[data-m="debugging"] {
+      background: var(--orange-dim);
+      color: var(--orange)
+    }
+
+    /* MODAL */
+    .mo {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .7);
+      backdrop-filter: blur(3px);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center
+    }
+
+    .mo.open {
+      display: flex
+    }
+
+    .modal {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      width: 480px;
+      max-width: 92vw;
+      max-height: 82vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .5);
+      animation: mIn .2s ease
+    }
+
+    @keyframes mIn {
+      from {
+        opacity: 0;
+        transform: scale(.95) translateY(6px)
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0)
+      }
+    }
+
+    .mt {
+      font-weight: 800;
+      font-size: 15px;
+      margin-bottom: 3px;
+      color: var(--lime)
+    }
+
+    .md {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-bottom: 14px;
+      line-height: 1.6
+    }
+
+    .mf {
+      margin-bottom: 12px
+    }
+
+    .mf label {
+      font-size: 9px;
+      color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      margin-bottom: 4px;
+      display: block
+    }
+
+    .mf input,
+    .mf textarea,
+    .mf select {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      padding: 7px 10px;
+      outline: none
+    }
+
+    .mf input:focus,
+    .mf textarea:focus,
+    .mf select:focus {
+      border-color: var(--lime)
+    }
+
+    .mf .hint {
+      font-size: 9px;
+      color: var(--text-muted);
+      margin-top: 3px
+    }
+
+    .mf .hint a {
+      color: var(--lime);
+      text-decoration: none
+    }
+
+    .macts {
+      display: flex;
+      gap: 6px;
+      margin-top: 14px
+    }
+
+    .mbtn {
+      flex: 1;
+      background: var(--bg4);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 11px;
+      padding: 8px;
+      cursor: pointer;
+      transition: all .15s
+    }
+
+    .mbtn:hover {
+      border-color: var(--border2)
+    }
+
+    .mbtn.pri {
+      background: var(--lime);
+      border-color: var(--lime);
+      color: #1a1a00;
+      font-weight: 700
+    }
+
+    .mbtn.pri:hover {
+      background: var(--lime2)
+    }
+
+    /* Tutorial step */
+    .tut-step {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 8px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start
+    }
+
+    .tut-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 7px;
+      background: var(--lime);
+      color: #1a1a00;
+      font-weight: 800;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-family: 'Inter', sans-serif
+    }
+
+    .tut-body {
+      flex: 1
+    }
+
+    .tut-title {
+      font-weight: 700;
+      font-size: 12px;
+      margin-bottom: 3px
+    }
+
+    .tut-desc {
+      font-size: 11px;
+      color: var(--text-dim);
+      line-height: 1.5
+    }
+
+    .tut-code {
+      margin-top: 6px;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 8px 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--lime);
+      overflow-x: auto;
+      white-space: pre
+    }
+
+    /* Version list */
+    .vl-item {
+      padding: 8px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      margin-bottom: 4px;
+      cursor: pointer;
+      transition: all .1s;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .vl-item:hover {
+      border-color: var(--border2);
+      background: var(--bg3)
+    }
+
+    .vl-meta {
+      flex: 1
+    }
+
+    .vl-time {
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-dim)
+    }
+
+    .vl-label {
+      font-size: 9px;
+      color: var(--text-muted);
+      margin-top: 1px
+    }
+
+    .vl-restore {
+      background: var(--bg4);
+      border: 1px solid var(--lime);
+      border-radius: 4px;
+      color: var(--lime);
+      font-size: 9px;
+      padding: 3px 7px;
+      cursor: pointer;
+      font-family: 'JetBrains Mono', monospace
+    }
+
+    .vl-restore:hover {
+      background: var(--lime-dim)
+    }
+
+    ::-webkit-scrollbar {
+      width: 3px;
+      height: 3px
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 2px
+    }
+
+    #toast {
+      position: fixed;
+      bottom: -50px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      z-index: 300;
+      transition: bottom .3s ease;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, .4)
+    }
+
+    #toast.show {
+      bottom: 36px
+    }
+
+    #toast.success #ti {
+      color: var(--green)
+    }
+
+    #toast.error #ti {
+      color: var(--red)
+    }
+
+    .s-save {
+      cursor: pointer;
+      transition: all .15s;
+      padding: 1px 6px;
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      gap: 3px
+    }
+
+    .s-save.saved {
+      color: var(--green)
+    }
+
+    .s-save.unsaved {
+      color: var(--orange);
+      background: var(--orange-dim)
+    }
+
+    .multi-agent-tag {
+      font-size: 8px;
+      background: var(--purple-dim);
+      border: 1px solid rgba(139, 122, 247, 0.2);
+      color: var(--purple);
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-family: 'JetBrains Mono', monospace
+    }
+
+    .mercury-tag {
+      font-size: 8px;
+      background: var(--blue-dim);
+      border: 1px solid rgba(96, 165, 250, 0.2);
+      color: var(--blue);
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-family: 'JetBrains Mono', monospace
+    }
+  </style>
 </head>
+
 <body>
 
-<!-- TOPBAR -->
-<div class="topbar">
-  <a class="logo" href="#" onclick="return false"><div class="logo-icon">🍋</div>Squeeze</a>
-  <div class="sep"></div>
-  <select class="sq-select compact" id="mode-select" onchange="setMode(this.value)">
-    <option value="agentic">🟢 Agentic</option>
-    <option value="planning">🔵 Planning</option>
-    <option value="debugging">🟠 Debugging</option>
-  </select>
-  <div class="sep"></div>
-  <div class="topbar-file"><span class="modified-dot" id="mod-dot"></span><span id="cur-file">No file open</span></div>
-  <div class="files-modified" id="files-modified-badge"><span>📝</span><span id="files-mod-count">0 files modified</span></div>
-  <div class="topbar-spacer"></div>
-  <div class="rojo-indicator" id="rojo-ind" onclick="openRojoTutorial()"><div class="dot"></div><span id="rojo-lbl">Rojo</span></div>
-  <button class="tb" onclick="openSettings()">⚙ Settings</button>
-</div>
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <a class="logo" href="#" onclick="return false">
+      <div class="logo-icon">🍋</div>Squeeze
+    </a>
+    <div class="sep"></div>
+    <select class="sq-select compact" id="mode-select" onchange="setMode(this.value)">
+      <option value="agentic">🟢 Agentic</option>
+      <option value="planning">🔵 Planning</option>
+      <option value="debugging">🟠 Debugging</option>
+    </select>
+    <div class="sep"></div>
+    <div class="topbar-file"><span class="modified-dot" id="mod-dot"></span><span id="cur-file">No file open</span>
+    </div>
+    <div class="files-modified" id="files-modified-badge"><span>📝</span><span id="files-mod-count">0 files
+        modified</span></div>
+    <div class="topbar-spacer"></div>
+    <div class="rojo-indicator" id="rojo-ind" onclick="openRojoTutorial()">
+      <div class="dot"></div><span id="rojo-lbl">Rojo</span>
+    </div>
+    <button class="tb" onclick="openSettings()">⚙ Settings</button>
+  </div>
 
-<!-- MAIN -->
-<div class="main">
-  <!-- FILE EXPLORER -->
-  <div class="explorer">
-    <div class="exp-head"><span>Explorer</span><button class="exp-btn" title="Refresh" onclick="refreshFileTree()">↻</button><button class="exp-btn" title="New file" onclick="createNewFile()">+</button></div>
-    <div class="ftree" id="ftree">
-      <div class="exp-empty" id="exp-empty">
-        <div style="font-size:24px;margin-bottom:6px">📁</div>
-        Connect a Rojo project to see files
-        <button class="conn-btn" onclick="connectRojoFolder()">📂 Connect Folder</button>
-        <button class="conn-btn" onclick="openRojoTutorial()" style="border-color:var(--blue);color:var(--blue);margin-top:4px">📖 Setup Guide</button>
+  <!-- MAIN -->
+  <div class="main">
+    <!-- FILE EXPLORER -->
+    <div class="explorer">
+      <div class="exp-head"><span>Explorer</span><button class="exp-btn" title="Refresh"
+          onclick="refreshFileTree()">↻</button><button class="exp-btn" title="New file"
+          onclick="createNewFile()">+</button></div>
+      <div class="ftree" id="ftree">
+        <div class="exp-empty" id="exp-empty">
+          <div style="font-size:24px;margin-bottom:6px">📁</div>
+          Connect a Rojo project to see files
+          <button class="conn-btn" onclick="connectRojoFolder()">📂 Connect Folder</button>
+          <button class="conn-btn" onclick="openRojoTutorial()"
+            style="border-color:var(--blue);color:var(--blue);margin-top:4px">📖 Setup Guide</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- EDITOR -->
+    <div class="ed-area">
+      <div class="ed-tabs" id="ed-tabs"></div>
+      <div class="ai-banner" id="ai-banner"><span>🤖</span><span id="ai-banner-t" style="flex:1">AI proposes
+          changes</span><button class="vb accept" onclick="acceptAI()">✓ Accept</button><button class="vb reject"
+          onclick="rejectAI()">✕ Reject</button></div>
+      <div class="ed-wrap" id="ed-wrap">
+        <div class="empty-ed" id="empty-ed">
+          <div class="empty-ed-icon">🍋</div>
+          <h3>Squeeze IDE</h3>
+          <p>Connect a Rojo folder or create a file to start coding Luau.</p>
+        </div>
+        <div id="monaco-editor" style="display:none"></div>
+      </div>
+      <div class="vbar"><span id="vb-cur">Ln 1, Col 1</span><span>Luau</span><span class="sp"></span><button class="vb"
+          onclick="openVersions()">⏱ History</button></div>
+    </div>
+
+    <!-- CHAT -->
+    <div class="chat">
+      <div class="ch-head">
+        <span style="font-size:14px">🍋</span>
+        <span class="ch-title">AI Chat</span>
+        <span class="s-mode" id="ch-badge" data-m="agentic">AGENTIC</span>
+        <button class="ch-ibtn" title="Clear" onclick="clearChat()">🗑</button>
+      </div>
+      <div class="ch-msgs" id="ch-msgs">
+        <div class="m">
+          <div class="m-av ai">🍋</div>
+          <div class="m-body">
+            <div class="m-bub">Hey! I'm Squeeze — your Roblox Luau AI assistant.
+
+              I can write, edit, and debug scripts directly in your project. Connect a Rojo folder to get started, or
+              just ask me anything about Luau!
+
+              Use the mode selector to switch between:
+              • <strong>Agentic</strong> — I write & edit code directly
+              • <strong>Planning</strong> — I help plan architecture
+              • <strong>Debugging</strong> — I find & fix bugs</div>
+          </div>
+        </div>
+      </div>
+      <div class="ch-in">
+        <div class="ch-row">
+          <textarea id="ci" placeholder="Ask about Luau..." rows="1" onkeydown="handleKey(event)"
+            oninput="autoR(this)"></textarea>
+          <button class="ch-send" id="send-btn" onclick="sendMessage()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="22" y1="2" x2="11" y2="13" />
+              <polygon points="22 2 15 22 11 13 2 9 22 2" />
+            </svg>
+          </button>
+        </div>
+        <div class="ch-model">
+          <select class="sq-select compact" id="provider-sel" onchange="setProvider(this.value)">
+            <option value="puter">Puter.js (Free)</option>
+            <option value="openrouter">OpenRouter</option>
+          </select>
+          <select class="sq-select compact" id="model-sel" style="flex:1"></select>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- EDITOR -->
-  <div class="ed-area">
-    <div class="ed-tabs" id="ed-tabs"></div>
-    <div class="ai-banner" id="ai-banner"><span>🤖</span><span id="ai-banner-t" style="flex:1">AI proposes changes</span><button class="vb accept" onclick="acceptAI()">✓ Accept</button><button class="vb reject" onclick="rejectAI()">✕ Reject</button></div>
-    <div class="ed-wrap" id="ed-wrap">
-      <div class="empty-ed" id="empty-ed"><div class="empty-ed-icon">🍋</div><h3>Squeeze IDE</h3><p>Connect a Rojo folder or create a file to start coding Luau.</p></div>
-      <div id="monaco-editor" style="display:none"></div>
-    </div>
-    <div class="vbar"><span id="vb-cur">Ln 1, Col 1</span><span>Luau</span><span class="sp"></span><button class="vb" onclick="openVersions()">⏱ History</button></div>
+  <!-- STATUS BAR -->
+  <div class="sbar">
+    <span id="s-rojo">⊘ Disconnected</span>
+    <span id="s-files">0 files</span>
+    <span id="s-save" class="s-save saved" onclick="saveFile()" title="Save current file (Ctrl+S)">💾 Saved</span>
+    <span class="sp"></span>
+    <span class="s-mode" id="s-mode" data-m="agentic">AGENTIC</span>
+    <span id="s-model">Claude Opus 4.6</span>
   </div>
 
-  <!-- CHAT -->
-  <div class="chat">
-    <div class="ch-head">
-      <span style="font-size:14px">🍋</span>
-      <span class="ch-title">AI Chat</span>
-      <span class="s-mode" id="ch-badge" data-m="agentic">AGENTIC</span>
-      <button class="ch-ibtn" title="Clear" onclick="clearChat()">🗑</button>
-    </div>
-    <div class="ch-msgs" id="ch-msgs">
-      <div class="m"><div class="m-av ai">🍋</div><div class="m-body"><div class="m-bub">Hey! I'm Squeeze — your Roblox Luau AI assistant.
+  <!-- TOAST -->
+  <div id="toast"><span id="ti">✓</span><span id="tm">Saved!</span></div>
 
-I can write, edit, and debug scripts directly in your project. Connect a Rojo folder to get started, or just ask me anything about Luau!
-
-Use the mode selector to switch between:
-• <strong>Agentic</strong> — I write & edit code directly
-• <strong>Planning</strong> — I help plan architecture
-• <strong>Debugging</strong> — I find & fix bugs</div></div></div>
-    </div>
-    <div class="ch-in">
-      <div class="ch-row">
-        <textarea id="ci" placeholder="Ask about Luau..." rows="1" onkeydown="handleKey(event)" oninput="autoR(this)"></textarea>
-        <button class="ch-send" id="send-btn" onclick="sendMessage()">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-        </button>
+  <!-- SETTINGS MODAL -->
+  <div class="mo" id="settings-mo">
+    <div class="modal">
+      <div class="mt">⚙ Settings</div>
+      <div class="md">Configure AI providers and API keys.</div>
+      <div class="mf"><label>OpenRouter API Key</label><input type="password" id="s-key" placeholder="sk-or-v1-...">
+        <div class="hint">Get a key at <a href="https://openrouter.ai/keys" target="_blank">openrouter.ai/keys</a></div>
       </div>
-      <div class="ch-model">
-        <select class="sq-select compact" id="provider-sel" onchange="setProvider(this.value)">
-          <option value="puter">Puter.js (Free)</option>
-          <option value="openrouter">OpenRouter</option>
-        </select>
-        <select class="sq-select compact" id="model-sel" style="flex:1"></select>
+      <div class="mf"><label>Custom OpenRouter Models (one per line: value|label)</label><textarea id="s-custom-models"
+          rows="4" placeholder="anthropic/claude-3.5-sonnet|Claude 3.5 Sonnet&#10;openai/gpt-4o|GPT-4o"></textarea>
+        <div class="hint">Add custom models by writing model-id|Display Name, one per line</div>
       </div>
+      <div class="mf"><label>System Prompt Override</label><textarea id="s-prompt" rows="3"
+          placeholder="Leave blank for default..." style="resize:vertical"></textarea></div>
+      <div class="macts"><button class="mbtn" onclick="closeSettings()">Cancel</button><button class="mbtn pri"
+          onclick="saveSettings()">Save</button></div>
     </div>
   </div>
-</div>
 
-<!-- STATUS BAR -->
-<div class="sbar">
-  <span id="s-rojo">⊘ Disconnected</span>
-  <span id="s-files">0 files</span>
-  <span id="s-save" class="s-save saved" onclick="saveFile()" title="Save current file (Ctrl+S)">💾 Saved</span>
-  <span class="sp"></span>
-  <span class="s-mode" id="s-mode" data-m="agentic">AGENTIC</span>
-  <span id="s-model">Claude Opus 4.6</span>
-</div>
+  <!-- ROJO TUTORIAL MODAL -->
+  <div class="mo" id="rojo-mo">
+    <div class="modal">
+      <div class="mt">🔌 Connect Rojo to Squeeze</div>
+      <div class="md">Rojo syncs local files into Roblox Studio in real-time. Squeeze writes directly to your Rojo
+        project folder — when <code
+          style="color:var(--lime);background:var(--bg4);padding:1px 4px;border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:10px">rojo serve</code>
+        is running, changes appear in Studio instantly.</div>
 
-<!-- TOAST -->
-<div id="toast"><span id="ti">✓</span><span id="tm">Saved!</span></div>
+      <div class="tut-step">
+        <div class="tut-num">1</div>
+        <div class="tut-body">
+          <div class="tut-title">Install Rojo CLI</div>
+          <div class="tut-desc">Install via Aftman (recommended) or Foreman.</div>
+          <div class="tut-code">aftman add rojo-rbx/rojo@7
+            aftman install</div>
+        </div>
+      </div>
 
-<!-- SETTINGS MODAL -->
-<div class="mo" id="settings-mo">
-  <div class="modal">
-    <div class="mt">⚙ Settings</div>
-    <div class="md">Configure AI providers and API keys.</div>
-    <div class="mf"><label>OpenRouter API Key</label><input type="password" id="s-key" placeholder="sk-or-v1-..."><div class="hint">Get a key at <a href="https://openrouter.ai/keys" target="_blank">openrouter.ai/keys</a></div></div>
-    <div class="mf"><label>Custom OpenRouter Models (one per line: value|label)</label><textarea id="s-custom-models" rows="4" placeholder="anthropic/claude-3.5-sonnet|Claude 3.5 Sonnet&#10;openai/gpt-4o|GPT-4o"></textarea><div class="hint">Add custom models by writing model-id|Display Name, one per line</div></div>
-    <div class="mf"><label>System Prompt Override</label><textarea id="s-prompt" rows="3" placeholder="Leave blank for default..." style="resize:vertical"></textarea></div>
-    <div class="macts"><button class="mbtn" onclick="closeSettings()">Cancel</button><button class="mbtn pri" onclick="saveSettings()">Save</button></div>
-  </div>
-</div>
+      <div class="tut-step">
+        <div class="tut-num">2</div>
+        <div class="tut-body">
+          <div class="tut-title">Install Rojo Plugin in Studio</div>
+          <div class="tut-desc">Open Roblox Studio → Plugin Manager → search "Rojo" → Install. Or get it from the <a
+              href="https://create.roblox.com/store/asset/13916111412" target="_blank" style="color:var(--lime)">Creator
+              Store</a>.</div>
+        </div>
+      </div>
 
-<!-- ROJO TUTORIAL MODAL -->
-<div class="mo" id="rojo-mo">
-  <div class="modal">
-    <div class="mt">🔌 Connect Rojo to Squeeze</div>
-    <div class="md">Rojo syncs local files into Roblox Studio in real-time. Squeeze writes directly to your Rojo project folder — when <code style="color:var(--lime);background:var(--bg4);padding:1px 4px;border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:10px">rojo serve</code> is running, changes appear in Studio instantly.</div>
+      <div class="tut-step">
+        <div class="tut-num">3</div>
+        <div class="tut-body">
+          <div class="tut-title">Init your project</div>
+          <div class="tut-desc">Create a folder and initialize Rojo inside it.</div>
+          <div class="tut-code">mkdir my-game && cd my-game
+            rojo init</div>
+        </div>
+      </div>
 
-    <div class="tut-step"><div class="tut-num">1</div><div class="tut-body"><div class="tut-title">Install Rojo CLI</div><div class="tut-desc">Install via Aftman (recommended) or Foreman.</div><div class="tut-code">aftman add rojo-rbx/rojo@7
-aftman install</div></div></div>
+      <div class="tut-step">
+        <div class="tut-num">4</div>
+        <div class="tut-body">
+          <div class="tut-title">Start Rojo server</div>
+          <div class="tut-desc">Run <code
+              style="color:var(--lime);font-family:'JetBrains Mono',monospace;font-size:10px">rojo serve</code> in your
+            project folder. Then in Studio, click <strong>"Connect"</strong> in the Rojo plugin.</div>
+          <div class="tut-code">rojo serve
+            # Studio plugin → Connect → localhost:34872</div>
+        </div>
+      </div>
 
-    <div class="tut-step"><div class="tut-num">2</div><div class="tut-body"><div class="tut-title">Install Rojo Plugin in Studio</div><div class="tut-desc">Open Roblox Studio → Plugin Manager → search "Rojo" → Install. Or get it from the <a href="https://create.roblox.com/store/asset/13916111412" target="_blank" style="color:var(--lime)">Creator Store</a>.</div></div></div>
+      <div class="tut-step">
+        <div class="tut-num">5</div>
+        <div class="tut-body">
+          <div class="tut-title">Connect folder in Squeeze</div>
+          <div class="tut-desc">Click <strong>"Connect Folder"</strong> in the Explorer panel and select your Rojo
+            project folder. Squeeze will read/write files there — Rojo picks up changes automatically.</div>
+        </div>
+      </div>
 
-    <div class="tut-step"><div class="tut-num">3</div><div class="tut-body"><div class="tut-title">Init your project</div><div class="tut-desc">Create a folder and initialize Rojo inside it.</div><div class="tut-code">mkdir my-game && cd my-game
-rojo init</div></div></div>
+      <div
+        style="margin-top:12px;padding:10px;background:var(--lime-dim);border:1px solid rgba(168,228,77,0.2);border-radius:8px">
+        <div style="font-size:11px;color:var(--lime);font-weight:700;margin-bottom:3px">How it works</div>
+        <div style="font-size:10px;color:var(--text-dim);line-height:1.6">Squeeze ↔ Your local files ↔ Rojo CLI (watches
+          for changes) ↔ Studio Plugin (syncs into game). When the AI generates a script, Squeeze saves it to <code
+            style="color:var(--lime);font-family:'JetBrains Mono',monospace;font-size:9px">src/server/</code>, <code
+            style="color:var(--lime);font-family:'JetBrains Mono',monospace;font-size:9px">src/client/</code>, or <code
+            style="color:var(--lime);font-family:'JetBrains Mono',monospace;font-size:9px">src/shared/</code> — and Rojo
+          syncs it to Studio within seconds.</div>
+      </div>
 
-    <div class="tut-step"><div class="tut-num">4</div><div class="tut-body"><div class="tut-title">Start Rojo server</div><div class="tut-desc">Run <code style="color:var(--lime);font-family:'JetBrains Mono',monospace;font-size:10px">rojo serve</code> in your project folder. Then in Studio, click <strong>"Connect"</strong> in the Rojo plugin.</div><div class="tut-code">rojo serve
-# Studio plugin → Connect → localhost:34872</div></div></div>
-
-    <div class="tut-step"><div class="tut-num">5</div><div class="tut-body"><div class="tut-title">Connect folder in Squeeze</div><div class="tut-desc">Click <strong>"Connect Folder"</strong> in the Explorer panel and select your Rojo project folder. Squeeze will read/write files there — Rojo picks up changes automatically.</div></div></div>
-
-    <div style="margin-top:12px;padding:10px;background:var(--lime-dim);border:1px solid rgba(168,228,77,0.2);border-radius:8px">
-      <div style="font-size:11px;color:var(--lime);font-weight:700;margin-bottom:3px">How it works</div>
-      <div style="font-size:10px;color:var(--text-dim);line-height:1.6">Squeeze ↔ Your local files ↔ Rojo CLI (watches for changes) ↔ Studio Plugin (syncs into game). When the AI generates a script, Squeeze saves it to <code style="color:var(--lime);font-family:'JetBrains Mono',monospace;font-size:9px">src/server/</code>, <code style="color:var(--lime);font-family:'JetBrains Mono',monospace;font-size:9px">src/client/</code>, or <code style="color:var(--lime);font-family:'JetBrains Mono',monospace;font-size:9px">src/shared/</code> — and Rojo syncs it to Studio within seconds.</div>
+      <div class="macts"><button class="mbtn" onclick="closeRojoTutorial()">Close</button><button class="mbtn pri"
+          onclick="closeRojoTutorial();connectRojoFolder()">Connect Folder →</button></div>
     </div>
-
-    <div class="macts"><button class="mbtn" onclick="closeRojoTutorial()">Close</button><button class="mbtn pri" onclick="closeRojoTutorial();connectRojoFolder()">Connect Folder →</button></div>
   </div>
-</div>
 
-<!-- VERSION MODAL -->
-<div class="mo" id="ver-mo">
-  <div class="modal">
-    <div class="mt">⏱ Version History</div>
-    <div class="md" id="ver-label">Previous versions</div>
-    <div id="ver-list" style="max-height:320px;overflow-y:auto"></div>
-    <div class="macts"><button class="mbtn" onclick="closeVersions()">Close</button></div>
+  <!-- VERSION MODAL -->
+  <div class="mo" id="ver-mo">
+    <div class="modal">
+      <div class="mt">⏱ Version History</div>
+      <div class="md" id="ver-label">Previous versions</div>
+      <div id="ver-list" style="max-height:320px;overflow-y:auto"></div>
+      <div class="macts"><button class="mbtn" onclick="closeVersions()">Close</button></div>
+    </div>
   </div>
-</div>
 
-<!-- MONACO -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
-<script>
-// ═══ STATE ═══
-let rojoDirHandle=null,fileHandles=new Map,openTabs=[],activeTab=null,editor=null,editorReady=false;
-let pendingAICode=null,versionHistory={},syncInterval=null,modifiedFilesCount=0;
-let apiKey=localStorage.getItem('sq_api_key')||'';
-let provider=localStorage.getItem('sq_provider')||'puter';
-let model=localStorage.getItem('sq_model')||'anthropic/claude-opus-4-6';
-let puterModel=localStorage.getItem('sq_puter_model')||'anthropic/claude-opus-4-6';
-let currentMode='agentic',messages=[],isTyping=false,puterReady=false;
-let customModels=JSON.parse(localStorage.getItem('sq_custom_models')||'null');
+  <!-- MONACO -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
+  <script>
+    // ═══ STATE ═══
+    let rojoDirHandle = null, fileHandles = new Map, openTabs = [], activeTab = null, editor = null, editorReady = false;
+    let pendingAICode = null, versionHistory = {}, syncInterval = null, modifiedFilesCount = 0;
+    let apiKey = localStorage.getItem('sq_api_key') || '';
+    let provider = localStorage.getItem('sq_provider') || 'puter';
+    let model = localStorage.getItem('sq_model') || 'anthropic/claude-opus-4-6';
+    let puterModel = localStorage.getItem('sq_puter_model') || 'anthropic/claude-opus-4-6';
+    let currentMode = 'agentic', messages = [], isTyping = false, puterReady = false;
+    let customModels = JSON.parse(localStorage.getItem('sq_custom_models') || 'null');
 
-const PUTER_MODELS=[
-  {value:'anthropic/claude-opus-4-6',label:'Claude Opus 4.6 ✦'},
-  {value:'anthropic/claude-sonnet-4-6',label:'Claude Sonnet 4.6'},
-  {value:'x-ai/grok-4.20-multi-agent',label:'Grok 4.20 Multi-Agent 🤖'},
-  {value:'kwaipilot/kat-coder-pro-v2',label:'Kat Coder Pro V2'},
-  {value:'openai/gpt-5.4-pro',label:'GPT-5.4 Pro'},
-  {value:'openai/gpt-5.3-codex',label:'GPT-5.3 Codex'},
-  {value:'minimax/minimax-m2.7',label:'MiniMax M2.7'},
-  {value:'inception/mercury-2',label:'Mercury 2 🔭'},
-  {value:'inception/mercury-coder',label:'Mercury Coder 💻'},
-];
-const DEFAULT_OR_MODELS=[
-  {value:'anthropic/claude-opus-4-6',label:'Claude Opus 4.6 ✦'},
-  {value:'anthropic/claude-sonnet-4-6',label:'Claude Sonnet 4.6'},
-  {value:'x-ai/grok-4.20-multi-agent',label:'Grok 4.20 Multi-Agent 🤖'},
-  {value:'kwaipilot/kat-coder-pro-v2',label:'Kat Coder Pro V2'},
-  {value:'openai/gpt-5.4-pro',label:'GPT-5.4 Pro'},
-  {value:'openai/gpt-5.3-codex',label:'GPT-5.3 Codex'},
-  {value:'minimax/minimax-m2.7',label:'MiniMax M2.7'},
-  {value:'inception/mercury-2',label:'Mercury 2 🔭'},
-  {value:'inception/mercury-coder',label:'Mercury Coder 💻'},
-];
-function getORModels(){return customModels&&customModels.length?customModels:DEFAULT_OR_MODELS}
+    const PUTER_MODELS = [
+      { value: 'anthropic/claude-opus-4-6', label: 'Claude Opus 4.6 ✦' },
+      { value: 'anthropic/claude-sonnet-4-6', label: 'Claude Sonnet 4.6' },
+      { value: 'x-ai/grok-4.20-multi-agent', label: 'Grok 4.20 Multi-Agent 🤖' },
+      { value: 'kwaipilot/kat-coder-pro-v2', label: 'Kat Coder Pro V2' },
+      { value: 'openai/gpt-5.4-pro', label: 'GPT-5.4 Pro' },
+      { value: 'openai/gpt-5.3-codex', label: 'GPT-5.3 Codex' },
+      { value: 'minimax/minimax-m2.7', label: 'MiniMax M2.7' },
+      { value: 'inception/mercury-2', label: 'Mercury 2 🔭' },
+      { value: 'inception/mercury-coder', label: 'Mercury Coder 💻' },
+    ];
+    const DEFAULT_OR_MODELS = [
+      { value: 'anthropic/claude-opus-4-6', label: 'Claude Opus 4.6 ✦' },
+      { value: 'anthropic/claude-sonnet-4-6', label: 'Claude Sonnet 4.6' },
+      { value: 'x-ai/grok-4.20-multi-agent', label: 'Grok 4.20 Multi-Agent 🤖' },
+      { value: 'kwaipilot/kat-coder-pro-v2', label: 'Kat Coder Pro V2' },
+      { value: 'openai/gpt-5.4-pro', label: 'GPT-5.4 Pro' },
+      { value: 'openai/gpt-5.3-codex', label: 'GPT-5.3 Codex' },
+      { value: 'minimax/minimax-m2.7', label: 'MiniMax M2.7' },
+      { value: 'inception/mercury-2', label: 'Mercury 2 🔭' },
+      { value: 'inception/mercury-coder', label: 'Mercury Coder 💻' },
+    ];
+    function getORModels() { return customModels && customModels.length ? customModels : DEFAULT_OR_MODELS }
 
-// Roblox service → Rojo folder mapping
-const SERVICE_PATH_MAP={
-  'ServerScriptService':'src/server','ServerStorage':'src/server',
-  'ReplicatedStorage':'src/shared','ReplicatedFirst':'src/shared',
-  'StarterGui':'src/client','StarterPlayer':'src/client','StarterPack':'src/client',
-  'Workspace':'src/shared','Lighting':'src/shared','SoundService':'src/shared',
-  'server':'src/server','client':'src/client','shared':'src/shared'
-};
-const SERVICE_SUFFIX_MAP={
-  'ServerScriptService':'.server.luau','ServerStorage':'.server.luau',
-  'StarterGui':'.client.luau','StarterPlayer':'.client.luau','StarterPack':'.client.luau',
-  'ReplicatedStorage':'.luau','ReplicatedFirst':'.luau',
-  'server':'.server.luau','client':'.client.luau','shared':'.luau'
-};
+    // Roblox service → Rojo folder mapping
+    const SERVICE_PATH_MAP = {
+      'ServerScriptService': 'src/server', 'ServerStorage': 'src/server',
+      'ReplicatedStorage': 'src/shared', 'ReplicatedFirst': 'src/shared',
+      'StarterGui': 'src/client', 'StarterPlayer': 'src/client', 'StarterPack': 'src/client',
+      'Workspace': 'src/shared', 'Lighting': 'src/shared', 'SoundService': 'src/shared',
+      'server': 'src/server', 'client': 'src/client', 'shared': 'src/shared'
+    };
+    const SERVICE_SUFFIX_MAP = {
+      'ServerScriptService': '.server.luau', 'ServerStorage': '.server.luau',
+      'StarterGui': '.client.luau', 'StarterPlayer': '.client.luau', 'StarterPack': '.client.luau',
+      'ReplicatedStorage': '.luau', 'ReplicatedFirst': '.luau',
+      'server': '.server.luau', 'client': '.client.luau', 'shared': '.luau'
+    };
 
-const MODE_PROMPTS={
-agentic:`You are Squeeze, an expert Roblox Luau coding AI agent. AGENTIC MODE — you are FULLY AUTONOMOUS. You can create, edit, and read files directly in the user's Rojo project.
+    const MODE_PROMPTS = {
+      agentic: `You are Squeeze, an expert Roblox Luau coding AI agent. AGENTIC MODE — you are FULLY AUTONOMOUS. You can create, edit, and read files directly in the user's Rojo project.
 
 FILE OPERATION RULES:
 - You MUST include a Rojo path comment at the top of EVERY code block: -- Rojo path: src/server|client|shared/FileName.server|client.luau
@@ -476,7 +1831,7 @@ When a user asks to "create a sprint system" or "add a leaderboard", you AUTONOM
 3. Write complete, working code
 4. The files will be auto-created in the project`,
 
-planning:`You are Squeeze in PLANNING MODE. Help plan Roblox game architecture WITHOUT writing code:
+      planning: `You are Squeeze in PLANNING MODE. Help plan Roblox game architecture WITHOUT writing code:
 - Suggest system architectures with module boundaries
 - Recommend Rojo folder structures with exact paths (src/server, src/client, src/shared)
 - Plan server/client data flows
@@ -485,7 +1840,7 @@ planning:`You are Squeeze in PLANNING MODE. Help plan Roblox game architecture W
 - Format with clear headings and bullets
 - You have access to ALL project files for context`,
 
-debugging:`You are Squeeze in DEBUGGING MODE. Analyze Luau code for issues:
+      debugging: `You are Squeeze in DEBUGGING MODE. Analyze Luau code for issues:
 - You have access to ALL project files — check cross-file dependencies
 - Identify bugs with file names and line references
 - Rate severity: 🔴 Critical, 🟡 Warning, 🟢 Info
@@ -493,663 +1848,689 @@ debugging:`You are Squeeze in DEBUGGING MODE. Analyze Luau code for issues:
 - Provide exact fixes for each issue with complete corrected code blocks (include Rojo path)
 - Give overall code health summary
 - Fixes are auto-applied when you include Rojo paths in code blocks`
-};
+    };
 
-// ═══ INIT ═══
-document.addEventListener('DOMContentLoaded',()=>{
-  document.getElementById('provider-sel').value=provider;
-  setProvider(provider,true);
-  initMonaco();
-  initPuter();
-  if(!apiKey&&provider==='openrouter')setTimeout(()=>openSettings(),500);
-  document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();saveFile()}});
-});
-
-// ═══ MONACO ═══
-function initMonaco(){
-  require.config({paths:{vs:'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs'}});
-  require(['vs/editor/editor.main'],function(){
-    monaco.languages.register({id:'lua'});
-    monaco.languages.setMonarchTokensProvider('lua',{
-      defaultToken:'',tokenPostfix:'.lua',
-      keywords:['and','break','continue','do','else','elseif','end','false','for','function','if','in','local','nil','not','or','repeat','return','then','true','until','while','type','export','typeof'],
-      tokenizer:{root:[
-        [/--\[([=]*)\[/,'comment','@cBlock.$1'],[/--.*$/,'comment'],
-        [/\[([=]*)\[/,'string','@sBlock.$1'],[/"([^"\\]|\\.)*"/,'string'],[/'([^'\\]|\\.)*'/,'string'],[/`([^`\\]|\\.)*`/,'string'],
-        [/\d+(\.\d+)?([eE][\-+]?\d+)?/,'number'],[/0[xX][0-9a-fA-F]+/,'number'],
-        [/[a-zA-Z_]\w*/,{cases:{'@keywords':'keyword','@default':'identifier'}}],
-        [/[{}()\[\]]/,'@brackets'],[/[;,.:]/,'delimiter'],[/[+\-*/%^#=<>~]/,'operator'],[/\.\.\.?/,'operator']
-      ],cBlock:[[/[^\]]+/,'comment'],[/\]([=]*)\]/,{cases:{'$1==$S2':{token:'comment',next:'@pop'},'@default':'comment'}}],[/./,'comment']],
-      sBlock:[[/[^\]]+/,'string'],[/\]([=]*)\]/,{cases:{'$1==$S2':{token:'string',next:'@pop'},'@default':'string'}}],[/./,'string']]}
+    // ═══ INIT ═══
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('provider-sel').value = provider;
+      setProvider(provider, true);
+      initMonaco();
+      initPuter();
+      if (!apiKey && provider === 'openrouter') setTimeout(() => openSettings(), 500);
+      document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); saveFile() } });
     });
-    monaco.editor.defineTheme('squeeze-dark',{base:'vs-dark',inherit:true,
-      rules:[{token:'comment',foreground:'6b7280',fontStyle:'italic'},{token:'keyword',foreground:'c084fc'},{token:'string',foreground:'86efac'},{token:'number',foreground:'fb923c'},{token:'identifier',foreground:'e4e4f0'}],
-      colors:{'editor.background':'#0b0b10','editor.foreground':'#e4e4f0','editor.lineHighlightBackground':'#14141b','editorCursor.foreground':'#a8e44d','editor.selectionBackground':'#3a3a5050','editorLineNumber.foreground':'#3a3a50','editorLineNumber.activeForeground':'#8888a0','editorSuggestWidget.background':'#14141b','editorSuggestWidget.border':'#2a2a3a','editorSuggestWidget.selectedBackground':'#22222f','editorWidget.background':'#14141b'}
-    });
-    editor=monaco.editor.create(document.getElementById('monaco-editor'),{
-      language:'lua',theme:'squeeze-dark',fontFamily:"'JetBrains Mono', monospace",fontSize:13,lineHeight:22,
-      minimap:{enabled:true,scale:1},scrollBeyondLastLine:false,automaticLayout:true,tabSize:2,
-      wordWrap:'off',smoothScrolling:true,cursorBlinking:'smooth',cursorSmoothCaretAnimation:'on',
-      bracketPairColorization:{enabled:true},guides:{bracketPairs:true,indentation:true},padding:{top:6},
-      suggest:{showWords:true,showSnippets:true}
-    });
-    editor.onDidChangeCursorPosition(e=>{document.getElementById('vb-cur').textContent=`Ln ${e.position.lineNumber}, Col ${e.position.column}`});
-    editor.onDidChangeModelContent(()=>{
-      if(activeTab!==null&&openTabs[activeTab]){openTabs[activeTab].modified=true;renderTabs();document.getElementById('mod-dot').style.display='block';updateModCount()}
-    });
-    registerCompletions();
-    editorReady=true;
-  });
-}
 
-function registerCompletions(){
-  const svcs=['Players','Workspace','ReplicatedStorage','ServerScriptService','ServerStorage','StarterGui','StarterPlayer','StarterPack','Lighting','SoundService','TweenService','RunService','UserInputService','ContextActionService','CollectionService','DataStoreService','HttpService','MarketplaceService','MessagingService','PhysicsService','PathfindingService','Debris','Teams','Chat','BadgeService','TextService','MemoryStoreService'];
-  const globs=['game','workspace','script','print','warn','error','typeof','type','tostring','tonumber','select','pairs','ipairs','next','unpack','pcall','xpcall','coroutine','task','Instance','Enum','Vector3','Vector2','CFrame','Color3','BrickColor','UDim','UDim2','Ray','Region3','NumberRange','NumberSequence','ColorSequence','TweenInfo','OverlapParams','RaycastParams','math','string','table','os','tick','time','task.wait','task.spawn','task.defer','task.delay'];
-  const snips=[
-    {label:'service',insert:'local ${1:Service} = game:GetService("${1:Service}")',doc:'Get a Roblox service'},
-    {label:'connect',insert:'${1:event}:Connect(function(${2:...})\n\t$0\nend)',doc:'Connect to event'},
-    {label:'pcall',insert:'local ok, err = pcall(function()\n\t$0\nend)',doc:'Protected call'},
-    {label:'module',insert:'local ${1:M} = {}\n\nfunction ${1:M}.${2:init}()\n\t$0\nend\n\nreturn ${1:M}',doc:'Module template'},
-    {label:'remote-server',insert:'local RE = Instance.new("RemoteEvent")\nRE.Name = "${1:EventName}"\nRE.Parent = game:GetService("ReplicatedStorage")\n\nRE.OnServerEvent:Connect(function(player${2:})\n\t$0\nend)',doc:'Remote event server'},
-    {label:'tween',insert:'local TS = game:GetService("TweenService")\nlocal ti = TweenInfo.new(${1:1}, Enum.EasingStyle.${2:Quad})\nlocal tw = TS:Create(${3:inst}, ti, {${4:Prop = val}})\ntw:Play()',doc:'Tween animation'},
-    {label:'datastore',insert:'local DS = game:GetService("DataStoreService")\nlocal store = DS:GetDataStore("${1:Name}")\n\nlocal ok, data = pcall(store.GetAsync, store, "Key_"..player.UserId)\nif ok then\n\t$0\nend',doc:'DataStore load'},
-  ];
-  monaco.languages.registerCompletionItemProvider('lua',{
-    provideCompletionItems:(mdl,pos)=>{
-      const w=mdl.getWordUntilPosition(pos);
-      const r={startLineNumber:pos.lineNumber,endLineNumber:pos.lineNumber,startColumn:w.startColumn,endColumn:w.endColumn};
-      const s=[];
-      svcs.forEach(v=>s.push({label:v,kind:monaco.languages.CompletionItemKind.Module,insertText:v,range:r,detail:'Service'}));
-      globs.forEach(v=>s.push({label:v,kind:monaco.languages.CompletionItemKind.Variable,insertText:v,range:r,detail:'Global'}));
-      snips.forEach(v=>s.push({label:v.label,kind:monaco.languages.CompletionItemKind.Snippet,insertText:v.insert,insertTextRules:monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,range:r,detail:'Snippet',documentation:v.doc}));
-      return{suggestions:s};
+    // ═══ MONACO ═══
+    function initMonaco() {
+      require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs' } });
+      require(['vs/editor/editor.main'], function () {
+        monaco.languages.register({ id: 'lua' });
+        monaco.languages.setMonarchTokensProvider('lua', {
+          defaultToken: '', tokenPostfix: '.lua',
+          keywords: ['and', 'break', 'continue', 'do', 'else', 'elseif', 'end', 'false', 'for', 'function', 'if', 'in', 'local', 'nil', 'not', 'or', 'repeat', 'return', 'then', 'true', 'until', 'while', 'type', 'export', 'typeof'],
+          tokenizer: {
+            root: [
+              [/--\[([=]*)\[/, 'comment', '@cBlock.$1'], [/--.*$/, 'comment'],
+              [/\[([=]*)\[/, 'string', '@sBlock.$1'], [/"([^"\\]|\\.)*"/, 'string'], [/'([^'\\]|\\.)*'/, 'string'], [/`([^`\\]|\\.)*`/, 'string'],
+              [/\d+(\.\d+)?([eE][\-+]?\d+)?/, 'number'], [/0[xX][0-9a-fA-F]+/, 'number'],
+              [/[a-zA-Z_]\w*/, { cases: { '@keywords': 'keyword', '@default': 'identifier' } }],
+              [/[{}()\[\]]/, '@brackets'], [/[;,.:]/, 'delimiter'], [/[+\-*/%^#=<>~]/, 'operator'], [/\.\.\.?/, 'operator']
+            ], cBlock: [[/[^\]]+/, 'comment'], [/\]([=]*)\]/, { cases: { '$1==$S2': { token: 'comment', next: '@pop' }, '@default': 'comment' } }], [/./, 'comment']],
+            sBlock: [[/[^\]]+/, 'string'], [/\]([=]*)\]/, { cases: { '$1==$S2': { token: 'string', next: '@pop' }, '@default': 'string' } }], [/./, 'string']]
+          }
+        });
+        monaco.editor.defineTheme('squeeze-dark', {
+          base: 'vs-dark', inherit: true,
+          rules: [{ token: 'comment', foreground: '6b7280', fontStyle: 'italic' }, { token: 'keyword', foreground: 'c084fc' }, { token: 'string', foreground: '86efac' }, { token: 'number', foreground: 'fb923c' }, { token: 'identifier', foreground: 'e4e4f0' }],
+          colors: { 'editor.background': '#0b0b10', 'editor.foreground': '#e4e4f0', 'editor.lineHighlightBackground': '#14141b', 'editorCursor.foreground': '#a8e44d', 'editor.selectionBackground': '#3a3a5050', 'editorLineNumber.foreground': '#3a3a50', 'editorLineNumber.activeForeground': '#8888a0', 'editorSuggestWidget.background': '#14141b', 'editorSuggestWidget.border': '#2a2a3a', 'editorSuggestWidget.selectedBackground': '#22222f', 'editorWidget.background': '#14141b' }
+        });
+        editor = monaco.editor.create(document.getElementById('monaco-editor'), {
+          language: 'lua', theme: 'squeeze-dark', fontFamily: "'JetBrains Mono', monospace", fontSize: 13, lineHeight: 22,
+          minimap: { enabled: true, scale: 1 }, scrollBeyondLastLine: false, automaticLayout: true, tabSize: 2,
+          wordWrap: 'off', smoothScrolling: true, cursorBlinking: 'smooth', cursorSmoothCaretAnimation: 'on',
+          bracketPairColorization: { enabled: true }, guides: { bracketPairs: true, indentation: true }, padding: { top: 6 },
+          suggest: { showWords: true, showSnippets: true }
+        });
+        editor.onDidChangeCursorPosition(e => { document.getElementById('vb-cur').textContent = `Ln ${e.position.lineNumber}, Col ${e.position.column}` });
+        editor.onDidChangeModelContent(() => {
+          if (activeTab !== null && openTabs[activeTab]) { openTabs[activeTab].modified = true; renderTabs(); document.getElementById('mod-dot').style.display = 'block'; updateModCount() }
+        });
+        registerCompletions();
+        editorReady = true;
+      });
     }
-  });
-}
 
-// ═══ MODE ═══
-function setMode(m){
-  currentMode=m;
-  document.getElementById('ch-badge').dataset.m=m;
-  document.getElementById('ch-badge').textContent=m.toUpperCase();
-  document.getElementById('s-mode').dataset.m=m;
-  document.getElementById('s-mode').textContent=m.toUpperCase();
-}
-
-// ═══ PROVIDER / MODEL ═══
-function setProvider(p,silent){
-  provider=p;localStorage.setItem('sq_provider',p);
-  const sel=document.getElementById('model-sel');
-  if(p==='puter'){
-    sel.innerHTML=PUTER_MODELS.map(m=>`<option value="${m.value}"${m.value===puterModel?' selected':''}>${m.label}</option>`).join('');
-  }else{
-    const models=getORModels();
-    sel.innerHTML=models.map(m=>`<option value="${m.value}"${m.value===model?' selected':''}>${m.label}</option>`).join('');
-  }
-  sel.onchange=()=>{
-    if(provider==='openrouter'){model=sel.value;localStorage.setItem('sq_model',model)}
-    else{puterModel=sel.value;localStorage.setItem('sq_puter_model',puterModel)}
-    document.getElementById('s-model').textContent=sel.options[sel.selectedIndex]?.text||sel.value;
-  };
-  document.getElementById('s-model').textContent=sel.options[sel.selectedIndex]?.text||'';
-  document.getElementById('provider-sel').value=p;
-}
-
-// ═══ FILE SYSTEM / ROJO ═══
-async function connectRojoFolder(){
-  if(!window.showDirectoryPicker){showToast('Use Chrome or Edge for folder sync','error');return}
-  try{
-    rojoDirHandle=await window.showDirectoryPicker({mode:'readwrite'});
-    await refreshFileTree();
-    updateRojoStatus(true);
-    // Check if rojo serve is running
-    checkRojoServer();
-    if(syncInterval)clearInterval(syncInterval);
-    syncInterval=setInterval(syncFromDisk,2500);
-    showToast('Folder connected!','success');
-  }catch(e){if(e.name!=='AbortError')console.error(e)}
-}
-
-async function checkRojoServer(){
-  try{
-    const r=await fetch('http://localhost:34872/api/rojo',{signal:AbortSignal.timeout(2000)});
-    if(r.ok){
-      const d=await r.json();
-      document.getElementById('rojo-lbl').textContent=`Rojo: ${d.serverVersion||'Running'}`;
-      showToast('Rojo server detected on :34872!','success');
-    }
-  }catch{
-    document.getElementById('rojo-lbl').textContent='Rojo: File Sync';
-  }
-}
-
-function updateRojoStatus(on){
-  const el=document.getElementById('rojo-ind');
-  const s=document.getElementById('s-rojo');
-  if(on){el.classList.add('on');s.textContent='⚡ Connected';s.style.color='var(--lime)'}
-  else{el.classList.remove('on');s.textContent='⊘ Disconnected';s.style.color=''}
-}
-
-async function refreshFileTree(){
-  if(!rojoDirHandle)return;
-  fileHandles.clear();
-  const t=document.getElementById('ftree');
-  t.innerHTML='';
-  document.getElementById('exp-empty').style.display='none';
-  await buildTree(rojoDirHandle,t,'',0);
-  document.getElementById('s-files').textContent=`${fileHandles.size} files`;
-}
-
-async function buildTree(dir,parent,base,depth){
-  const entries=[];for await(const e of dir.values())entries.push(e);
-  entries.sort((a,b)=>{if(a.kind!==b.kind)return a.kind==='directory'?-1:1;return a.name.localeCompare(b.name)});
-  for(const e of entries){
-    if(e.name.startsWith('.'))continue;
-    const p=base?`${base}/${e.name}`:e.name;
-    if(e.kind==='directory'){
-      const d=document.createElement('div');d.className='fi dir';d.dataset.depth=depth;
-      d.innerHTML=`${'<span class="fi-indent"></span>'.repeat(depth)}<span class="fi-icon">📁</span><span class="fi-name">${e.name}</span>`;
-      parent.appendChild(d);
-      const sub=await dir.getDirectoryHandle(e.name);
-      await buildTree(sub,parent,p,depth+1);
-    }else{
-      if(!/\.(lua|luau|json|toml)$/i.test(e.name))continue;
-      const h=await dir.getFileHandle(e.name);
-      fileHandles.set(p,h);
-      const isAI=aiCreatedFiles.has(p);
-      const isModTab=openTabs.find(t=>t.path===p&&t.modified);
-      const d=document.createElement('div');
-      d.className='fi'+(isAI?' ai-created':'')+(isModTab?' ai-modified':'');
-      d.dataset.depth=depth;d.dataset.path=p;
-      let badge='';
-      if(isAI)badge='<span class="fi-badge new">AI</span>';
-      else if(isModTab)badge='<span class="fi-badge mod">●</span>';
-      const icon=e.name.endsWith('.json')?'⚙':e.name.endsWith('.toml')?'🛠':isAI?'✨':'📄';
-      d.innerHTML=`${'<span class="fi-indent"></span>'.repeat(depth)}<span class="fi-icon">${icon}</span><span class="fi-name">${e.name}</span>${badge}`;
-      d.onclick=()=>openFile(p,e.name,h);
-      parent.appendChild(d);
-    }
-  }
-}
-
-async function openFile(path,name,handle){
-  const idx=openTabs.findIndex(t=>t.path===path);
-  if(idx!==-1){switchTab(idx);return}
-  const f=await handle.getFile();const c=await f.text();
-  openTabs.push({path,name,content:c,orig:c,modified:false,handle});
-  saveVer(path,c,'Opened');
-  switchTab(openTabs.length-1);
-}
-
-function switchTab(i){
-  if(i<0||i>=openTabs.length)return;
-  if(activeTab!==null&&editor&&openTabs[activeTab])openTabs[activeTab].content=editor.getValue();
-  activeTab=i;const t=openTabs[i];
-  document.getElementById('empty-ed').style.display='none';
-  document.getElementById('monaco-editor').style.display='block';
-  if(editor){editor.setValue(t.content);editor.focus()}
-  document.getElementById('cur-file').textContent=t.name;
-  document.getElementById('mod-dot').style.display=t.modified?'block':'none';
-  document.querySelectorAll('.fi').forEach(el=>el.classList.toggle('active',el.dataset.path===t.path));
-  renderTabs();
-}
-
-function closeTab(i,e){
-  if(e)e.stopPropagation();openTabs.splice(i,1);
-  if(!openTabs.length){activeTab=null;document.getElementById('empty-ed').style.display='flex';document.getElementById('monaco-editor').style.display='none';document.getElementById('cur-file').textContent='No file open';document.getElementById('mod-dot').style.display='none'}
-  else{if(activeTab>=openTabs.length)activeTab=openTabs.length-1;switchTab(activeTab)}
-  renderTabs();
-}
-
-function renderTabs(){
-  document.getElementById('ed-tabs').innerHTML=openTabs.map((t,i)=>`<div class="ed-tab ${i===activeTab?'active':''}" onclick="switchTab(${i})">📄 ${t.name}${t.modified?'<div class="tab-dot"></div>':''}<button class="tab-x" onclick="closeTab(${i},event)">×</button></div>`).join('');
-}
-
-function updateModCount(){
-  const c=openTabs.filter(t=>t.modified).length;
-  modifiedFilesCount=c;
-  const b=document.getElementById('files-modified-badge');
-  if(c>0){b.style.display='flex';document.getElementById('files-mod-count').textContent=`${c} file${c>1?'s':''} modified`}
-  else b.style.display='none';
-  const sv=document.getElementById('s-save');
-  if(c>0){sv.className='s-save unsaved';sv.innerHTML='💾 Unsaved'}
-  else{sv.className='s-save saved';sv.innerHTML='💾 Saved'}
-}
-
-async function saveFile(){
-  if(activeTab===null)return;const t=openTabs[activeTab];
-  if(!t.handle){showToast('No file handle','error');return}
-  const c=editor?editor.getValue():t.content;
-  try{const w=await t.handle.createWritable();await w.write(c);await w.close();
-    t.content=c;t.orig=c;t.modified=false;document.getElementById('mod-dot').style.display='none';
-    renderTabs();updateModCount();saveVer(t.path,c,'Saved');showToast(`Saved ${t.name}`,'success');
-  }catch(e){showToast('Save failed','error')}
-}
-
-async function createNewFile(){
-  const n=prompt('File name (e.g. SprintSystem.server.luau):');if(!n)return;
-  const tpl=`-- [ServerScript]\n-- Rojo path: src/server/${n}\n\nlocal Players = game:GetService("Players")\n\n`;
-  if(rojoDirHandle){
-    try{let d=rojoDirHandle;
-      try{d=await rojoDirHandle.getDirectoryHandle('src',{create:true})}catch{}
-      if(n.includes('.server.'))try{d=await d.getDirectoryHandle('server',{create:true})}catch{}
-      else if(n.includes('.client.'))try{d=await d.getDirectoryHandle('client',{create:true})}catch{}
-      else try{d=await d.getDirectoryHandle('shared',{create:true})}catch{}
-      const h=await d.getFileHandle(n,{create:true});const w=await h.createWritable();await w.write(tpl);await w.close();
-      await refreshFileTree();openFile(n,n,h);showToast(`Created ${n}`,'success');
-    }catch{showToast('Failed to create file','error')}
-  }else{openTabs.push({path:n,name:n,content:tpl,orig:tpl,modified:true,handle:null});switchTab(openTabs.length-1)}
-}
-
-async function syncFromDisk(){
-  if(!rojoDirHandle)return;
-  for(const[path,handle]of fileHandles){
-    const i=openTabs.findIndex(t=>t.path===path);if(i===-1)continue;
-    try{const f=await handle.getFile();const dc=await f.text();const t=openTabs[i];
-      if(dc!==t.orig&&dc!==t.content){t.orig=dc;if(!t.modified){t.content=dc;if(i===activeTab&&editor){const p=editor.getPosition();editor.setValue(dc);if(p)editor.setPosition(p)}}}
-    }catch{}
-  }
-}
-
-async function saveToRojo(fname,code,ctx){
-  if(!rojoDirHandle)return;
-  try{let sub='server';
-    if(ctx.includes('[LocalScript]'))sub='client';if(ctx.includes('[ModuleScript]'))sub='shared';
-    let src;try{src=await rojoDirHandle.getDirectoryHandle('src',{create:true})}catch{src=rojoDirHandle}
-    let sd;try{sd=await src.getDirectoryHandle(sub,{create:true})}catch{sd=src}
-    let fn=fname;
-    if(sub==='server'&&!fn.includes('.server.'))fn=fn.replace(/\.luau?$/,'.server.luau');
-    if(sub==='client'&&!fn.includes('.client.'))fn=fn.replace(/\.luau?$/,'.client.luau');
-    if(!fn.includes('.lua'))fn+='.luau';
-    const h=await sd.getFileHandle(fn,{create:true});const w=await h.createWritable();await w.write(code);await w.close();
-    showToast(`Synced ${fn}`,'success');await refreshFileTree();
-  }catch(e){console.error('Rojo save:',e)}
-}
-
-// ═══ AUTONOMOUS FILE OPERATIONS ═══
-let aiCreatedFiles=new Set();
-
-async function gatherFolderTree(dir,prefix='',depth=0){
-  if(depth>4)return '';
-  let tree='';const entries=[];
-  try{for await(const e of dir.values())entries.push(e)}catch{return ''}
-  entries.sort((a,b)=>{if(a.kind!==b.kind)return a.kind==='directory'?-1:1;return a.name.localeCompare(b.name)});
-  for(const e of entries){
-    if(e.name.startsWith('.'))continue;
-    const indent='  '.repeat(depth);
-    if(e.kind==='directory'){
-      tree+=`${indent}📁 ${e.name}/\n`;
-      try{const sub=await dir.getDirectoryHandle(e.name);tree+=await gatherFolderTree(sub,prefix+e.name+'/',depth+1)}catch{}
-    }else{
-      if(/\.(lua|luau|json|toml)$/i.test(e.name))tree+=`${indent}📄 ${e.name}\n`;
-    }
-  }
-  return tree;
-}
-
-async function gatherProjectContext(){
-  if(!rojoDirHandle)return '';
-  let ctx='\n\n=== FOLDER STRUCTURE ===\n';
-  ctx+=await gatherFolderTree(rojoDirHandle);
-  ctx+='=== END FOLDER STRUCTURE ===\n';
-  ctx+='\n=== PROJECT FILES ===\n';
-  let count=0;
-  for(const[path,handle]of fileHandles){
-    if(count>=20)break;
-    try{
-      const f=await handle.getFile();const txt=await f.text();
-      if(txt.length>8000)ctx+=`\n--- ${path} (${txt.length} chars, truncated) ---\n${txt.slice(0,4000)}\n...truncated...\n`;
-      else ctx+=`\n--- ${path} ---\n${txt}\n`;
-      count++;
-    }catch{}
-  }
-  if(count===0)ctx+='(No files in project yet — this is a fresh project. You should create files!)\n';
-  ctx+='=== END PROJECT FILES ===\n';
-  return ctx;
-}
-
-async function classifyAndResolve(rojoPath){
-  let parts=rojoPath.replace(/^\s+|\s+$/g,'').split('/');
-  let dirPath,fileName;
-  if(SERVICE_PATH_MAP[parts[0]]){
-    const mapped=SERVICE_PATH_MAP[parts[0]].split('/');
-    const suffix=SERVICE_SUFFIX_MAP[parts[0]]||'.luau';
-    fileName=parts.slice(1).join('/')||'Script';
-    if(!fileName.includes('.lua'))fileName+=suffix;
-    dirPath=mapped;
-  }
-  else if(parts[0]==='src'&&parts.length>=3){
-    dirPath=parts.slice(0,-1);
-    fileName=parts[parts.length-1];
-    if(!fileName.includes('.lua')){
-      if(parts[1]==='server')fileName+='.server.luau';
-      else if(parts[1]==='client')fileName+='.client.luau';
-      else fileName+='.luau';
-    }
-  }
-  else{
-    dirPath=['src','server'];
-    fileName=parts[parts.length-1]||'Script';
-    if(!fileName.includes('.lua'))fileName+='.server.luau';
-  }
-  return {dirPath,fileName};
-}
-
-async function createFileAtPath(rojoPath,code){
-  if(!rojoDirHandle){showToast('Connect a folder first','error');return null}
-  try{
-    const{dirPath,fileName}=await classifyAndResolve(rojoPath);
-    let dir=rojoDirHandle;
-    for(const seg of dirPath){
-      try{dir=await dir.getDirectoryHandle(seg,{create:true})}catch{break}
-    }
-    const h=await dir.getFileHandle(fileName,{create:true});
-    const w=await h.createWritable();await w.write(code);await w.close();
-    await refreshFileTree();
-    const fullPath=dirPath.join('/')+'/'+fileName;
-    openFile(fullPath,fileName,h);
-    return {path:fullPath,name:fileName};
-  }catch(e){console.error('createFileAtPath:',e);showToast(`Failed: ${e.message}`,'error');return null}
-}
-
-async function processAIFileOps(resp){
-  const blocks=[];
-  const regex=/```(?:luau|lua)\n([\s\S]*?)```/g;
-  let match;
-  while((match=regex.exec(resp))!==null){
-    const code=match[1];
-    const pathMatch=code.match(/--\s*Rojo\s*path:\s*([^\n]+)/i);
-    if(pathMatch){
-      blocks.push({path:pathMatch[1].trim(),code:code,isExisting:false});
-    }else{
-      const typeMatch=code.match(/--\s*\[(ServerScript|LocalScript|ModuleScript)\]/i);
-      const nameMatch=code.match(/--\s*([A-Z][a-zA-Z0-9_]+)/);
-      if(typeMatch){
-        let sub='server';
-        if(typeMatch[1]==='LocalScript')sub='client';
-        if(typeMatch[1]==='ModuleScript')sub='shared';
-        const name=nameMatch?nameMatch[1]:'Script';
-        blocks.push({path:`src/${sub}/${name}`,code:code,isExisting:false});
-      }
-    }
-  }
-  if(!blocks.length)return {count:0,files:[]};
-  for(const block of blocks){
-    const{dirPath,fileName}=await classifyAndResolve(block.path);
-    const fullPath=dirPath.join('/')+'/'+fileName;
-    block.resolvedPath=fullPath;
-    block.resolvedName=fileName;
-    block.isExisting=fileHandles.has(fullPath);
-  }
-  let created=0;
-  const results=[];
-  for(const block of blocks){
-    const result=await createFileAtPath(block.path,block.code);
-    if(result){
-      created++;
-      aiCreatedFiles.add(result.path);
-      saveVer(result.path,block.code,block.isExisting?'AI Modified':'AI Created');
-      const lines=block.code.split('\n').length;
-      results.push({name:result.name,path:result.path,lines:lines,isNew:!block.isExisting});
-    }
-  }
-  if(created>0){
-    showToast(`📁 ${created} file${created>1?'s':''} ${blocks.some(b=>b.isExisting)?'updated':'created'}`,'success');
-    await refreshFileTree();
-  }
-  return {count:created,files:results};
-}
-
-function buildFileOpsHtml(files){
-  if(!files||!files.length)return '';
-  let html='<div style="display:flex;flex-direction:column;gap:4px;margin-top:6px">';
-  for(const f of files){
-    html+=`<div class="file-op-card" onclick="openFileByPath('${f.path}')">`;
-    html+=`<div class="file-op-card-head">`;
-    html+=`<span class="file-op-icon">${f.isNew?'📄':'✏️'}</span>`;
-    html+=`<div class="file-op-info"><div class="file-op-name">${f.name}</div><div class="file-op-path">${f.path}</div></div>`;
-    html+=`<span class="file-op-badge ${f.isNew?'created':'modified'}">${f.isNew?'CREATED':'MODIFIED'}</span>`;
-    html+=`</div>`;
-    html+=`<div class="file-op-lines">📏 ${f.lines} lines</div>`;
-    html+=`</div>`;
-  }
-  html+=`</div>`;
-  html+=`<div class="file-ops-summary">✨ ${files.length} file${files.length>1?'s':''} written to project — click to view</div>`;
-  return html;
-}
-
-function stripCodeBlocksFromResp(text){
-  return text.replace(/```(?:luau|lua)\n[\s\S]*?```/g,'').replace(/\n{3,}/g,'\n\n').trim();
-}
-
-async function openFileByPath(path){
-  const handle=fileHandles.get(path);
-  if(handle){
-    const name=path.split('/').pop();
-    openFile(path,name,handle);
-  }
-}
-
-async function readFileByPath(path){
-  const handle=fileHandles.get(path);
-  if(!handle)return null;
-  try{const f=await handle.getFile();return await f.text()}catch{return null}
-}
-
-// ═══ VERSIONS ═══
-function saveVer(p,c,l){if(!versionHistory[p])versionHistory[p]=[];versionHistory[p].push({time:Date.now(),content:c,label:l||'Edit'});if(versionHistory[p].length>30)versionHistory[p].shift()}
-function openVersions(){
-  if(activeTab===null)return;const t=openTabs[activeTab];const vs=versionHistory[t.path]||[];
-  document.getElementById('ver-label').textContent=`Versions of ${t.name}`;
-  const el=document.getElementById('ver-list');
-  if(!vs.length){el.innerHTML='<div style="color:var(--text-muted);text-align:center;padding:16px;font-size:11px">No versions yet.</div>'}
-  else{el.innerHTML=vs.slice().reverse().map((_,i)=>{const ri=vs.length-1-i;const v=vs[ri];
-    return`<div class="vl-item"><div class="vl-meta"><div class="vl-time">${new Date(v.time).toLocaleString()}</div><div class="vl-label">${v.label}</div></div><button class="vl-restore" onclick="restoreVer(${ri})">Restore</button></div>`}).join('')}
-  document.getElementById('ver-mo').classList.add('open');
-}
-function closeVersions(){document.getElementById('ver-mo').classList.remove('open')}
-function restoreVer(i){if(activeTab===null)return;const t=openTabs[activeTab];const v=versionHistory[t.path];if(!v||!v[i])return;
-  if(editor)editor.setValue(v[i].content);t.content=v[i].content;t.modified=true;renderTabs();closeVersions();showToast('Restored','success')}
-
-// ═══ AI CHANGES ═══
-function showAIBanner(code){pendingAICode=code;document.getElementById('ai-banner-t').textContent=`AI proposes changes${activeTab!==null?' to '+openTabs[activeTab].name:''}`;document.getElementById('ai-banner').classList.add('show')}
-function acceptAI(){if(!pendingAICode)return;if(activeTab!==null&&editor){saveVer(openTabs[activeTab].path,editor.getValue(),'Before AI');editor.setValue(pendingAICode);openTabs[activeTab].content=pendingAICode;openTabs[activeTab].modified=true;renderTabs();updateModCount();saveVer(openTabs[activeTab].path,pendingAICode,'AI applied')}document.getElementById('ai-banner').classList.remove('show');pendingAICode=null;showToast('Applied','success')}
-function rejectAI(){pendingAICode=null;document.getElementById('ai-banner').classList.remove('show');showToast('Rejected','error')}
-
-// ═══ AI CHAT ═══
-async function sendMessage(override){
-  const inp=document.getElementById('ci');const txt=override||inp.value.trim();if(!txt||isTyping)return;
-  inp.value='';autoR(inp);
-  appendMsg('user',txt);
-  let ctx=txt;
-  if(currentMode==='agentic'||currentMode==='debugging'){
-    let fileCtx='';
-    if(activeTab!==null&&editor){
-      fileCtx=`\n[Currently Editing: ${openTabs[activeTab].name}]\n\`\`\`luau\n${editor.getValue()}\n\`\`\`\n`;
-    }
-    const projCtx=await gatherProjectContext();
-    ctx=`${fileCtx}${projCtx}\nRequest: ${txt}`;
-  }
-  messages.push({role:'user',content:ctx});
-  setTyping(true);
-
-  const thinkEl=showThinking();
-
-  try{
-    const sys=document.getElementById('s-prompt')?.value?.trim()||MODE_PROMPTS[currentMode];
-    let resp='';
-    if(provider==='openrouter'){
-      if(!apiKey)throw new Error('No API key. Add one in Settings.');
-      const cm=document.getElementById('model-sel').value;
-      const r=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',
-        headers:{'Content-Type':'application/json','Authorization':`Bearer ${apiKey}`,'HTTP-Referer':location.href,'X-Title':'Squeeze IDE'},
-        body:JSON.stringify({model:cm,stream:true,messages:[{role:'system',content:sys},...messages.slice(-12)]})});
-      if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${r.status}`)}
-      const rd=r.body.getReader(),dc=new TextDecoder();
-      removeThinking(thinkEl);
-      const aiEl=appendStreamMsg();
-      while(true){const{done,value}=await rd.read();if(done)break;
-        for(const ln of dc.decode(value).split('\n').filter(l=>l.startsWith('data: '))){
-          const d=ln.slice(6);if(d==='[DONE]')break;
-          try{resp+=JSON.parse(d).choices?.[0]?.delta?.content||'';updateStreamMsg(aiEl,resp)}catch{}}}
-    }else{
-      if(typeof puter==='undefined')throw new Error('Puter.js not loaded.');
-      const selectedModel=document.getElementById('model-sel').value;
-      const pm=[{role:'system',content:sys},...messages.slice(-12)];
-      removeThinking(thinkEl);
-      const aiEl=appendStreamMsg();
-      if(selectedModel==='x-ai/grok-4.20-multi-agent'){
-        updateStreamMsg(aiEl,'🔄 **Mercury-2** is decomposing your task into 4 sub-tasks...');
-        try{
-          const decomp=await puter.ai.chat([{role:'system',content:'You are a task decomposition agent. Break the following coding task into exactly 4 logical, non-overlapping sub-tasks that together fully address the request. Output ONLY a JSON array of 4 strings. No markdown, no explanation, no code fences.'},{role:'user',content:ctx}],{model:'inception/mercury-2'});
-          const rawD=typeof decomp==='string'?decomp:decomp?.message?.content??decomp?.choices?.[0]?.message?.content??'';
-          let subtasks;try{subtasks=JSON.parse(rawD.match(/\[[\s\S]*\]/)?.[0]||'[]')}catch{subtasks=[]}
-          if(subtasks.length!==4){const q=ctx;subtasks=[q+' (Part 1: core logic)',q+' (Part 2: error handling)',q+' (Part 3: integration)',q+' (Part 4: optimization)']}
-          updateStreamMsg(aiEl,'🚀 Dispatching to **4 Grok agents** in parallel...\n\n'+subtasks.map((s,i)=>'**Agent '+(i+1)+':** '+s).join('\n'));
-          const results=await Promise.all(subtasks.map((task,i)=>puter.ai.chat([{role:'system',content:sys+'\nYou are Agent '+(i+1)+' of 4 in a multi-agent system. Your specific sub-task: '+task+'\nFocus ONLY on your sub-task. Be thorough and precise.'},...messages.slice(-8),{role:'user',content:task}],{model:'x-ai/grok-4.20-multi-agent'})));
-          resp='# 🤖 Multi-Agent Results\n\n*Task decomposed by Mercury-2, executed by 4 Grok agents*\n';
-          results.forEach((r,i)=>{const t=typeof r==='string'?r:r?.message?.content??r?.choices?.[0]?.message?.content??'';resp+='\n---\n## Agent '+(i+1)+' — '+subtasks[i]+'\n\n'+t});
-          updateStreamMsg(aiEl,resp);
-        }catch(e2){resp='❌ Multi-agent error: '+e2.message;updateStreamMsg(aiEl,resp)}
-      }
-      else if((selectedModel==='inception/mercury-2'||selectedModel==='inception/mercury-coder')&&(currentMode==='planning'||currentMode==='debugging')){
-        updateStreamMsg(aiEl,'🔭 **Mercury Duo** — running Mercury-2 + Mercury-Coder in parallel...');
-        try{
-          const [analysis,codeReview]=await Promise.all([
-            puter.ai.chat([{role:'system',content:sys+'\n\nYou are Mercury-2, the architecture and high-level analysis agent. Focus on system design, patterns, data flow, strategic recommendations, and overall structure.'},...messages.slice(-8),{role:'user',content:ctx}],{model:'inception/mercury-2'}),
-            puter.ai.chat([{role:'system',content:sys+'\n\nYou are Mercury-Coder, the code specialist agent. Focus on implementation details, code quality, concrete fixes, specific code examples, and technical accuracy.'},...messages.slice(-8),{role:'user',content:ctx}],{model:'inception/mercury-coder'})
-          ]);
-          const aT=typeof analysis==='string'?analysis:analysis?.message?.content??analysis?.choices?.[0]?.message?.content??'';
-          const cT=typeof codeReview==='string'?codeReview:codeReview?.message?.content??codeReview?.choices?.[0]?.message?.content??'';
-          resp='# 🔭 Mercury-2 — '+(currentMode==='debugging'?'Bug Analysis':'Architecture Plan')+'\n\n'+aT+'\n\n---\n\n# 💻 Mercury-Coder — '+(currentMode==='debugging'?'Fix Implementation':'Code Blueprint')+'\n\n'+cT;
-          updateStreamMsg(aiEl,resp);
-        }catch(e2){resp='❌ Mercury collaboration error: '+e2.message;updateStreamMsg(aiEl,resp)}
-      }
-      else{
-        try{const st=await puter.ai.chat(pm,{model:selectedModel,stream:true});
-          for await(const p of st){const c=p?.text??p?.delta?.content??p?.choices?.[0]?.delta?.content??'';if(c){resp+=c;updateStreamMsg(aiEl,resp)}}}
-        catch{const r=await puter.ai.chat(pm,{model:selectedModel});
-          resp=typeof r==='string'?r:r?.message?.content??r?.choices?.[0]?.message?.content??String(r);updateStreamMsg(aiEl,resp)}
-      }
-    }
-    messages.push({role:'assistant',content:resp});
-
-    if(currentMode==='agentic'||currentMode==='debugging'){
-      const result=await processAIFileOps(resp);
-      if(result.count>0){
-        const streamEl=document.querySelector('.stream-bub')?.closest('.m');
-        if(streamEl){
-          const b=streamEl.querySelector('.m-body');
-          const explanation=stripCodeBlocksFromResp(resp);
-          const now=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-          const explHtml=explanation?parseMsg(explanation):'';
-          const fileCardsHtml=buildFileOpsHtml(result.files);
-          b.innerHTML=`${explHtml}${fileCardsHtml}<div class="m-actions"><button class="m-act" onclick="copyMsg(this)">📋 Copy</button><button class="m-act" onclick="likeMsg(this)">👍</button><button class="m-act" onclick="dislikeMsg(this)">👎</button></div><div class="m-time">${now}</div>`;
+    function registerCompletions() {
+      const svcs = ['Players', 'Workspace', 'ReplicatedStorage', 'ServerScriptService', 'ServerStorage', 'StarterGui', 'StarterPlayer', 'StarterPack', 'Lighting', 'SoundService', 'TweenService', 'RunService', 'UserInputService', 'ContextActionService', 'CollectionService', 'DataStoreService', 'HttpService', 'MarketplaceService', 'MessagingService', 'PhysicsService', 'PathfindingService', 'Debris', 'Teams', 'Chat', 'BadgeService', 'TextService', 'MemoryStoreService'];
+      const globs = ['game', 'workspace', 'script', 'print', 'warn', 'error', 'typeof', 'type', 'tostring', 'tonumber', 'select', 'pairs', 'ipairs', 'next', 'unpack', 'pcall', 'xpcall', 'coroutine', 'task', 'Instance', 'Enum', 'Vector3', 'Vector2', 'CFrame', 'Color3', 'BrickColor', 'UDim', 'UDim2', 'Ray', 'Region3', 'NumberRange', 'NumberSequence', 'ColorSequence', 'TweenInfo', 'OverlapParams', 'RaycastParams', 'math', 'string', 'table', 'os', 'tick', 'time', 'task.wait', 'task.spawn', 'task.defer', 'task.delay'];
+      const snips = [
+        { label: 'service', insert: 'local ${1:Service} = game:GetService("${1:Service}")', doc: 'Get a Roblox service' },
+        { label: 'connect', insert: '${1:event}:Connect(function(${2:...})\n\t$0\nend)', doc: 'Connect to event' },
+        { label: 'pcall', insert: 'local ok, err = pcall(function()\n\t$0\nend)', doc: 'Protected call' },
+        { label: 'module', insert: 'local ${1:M} = {}\n\nfunction ${1:M}.${2:init}()\n\t$0\nend\n\nreturn ${1:M}', doc: 'Module template' },
+        { label: 'remote-server', insert: 'local RE = Instance.new("RemoteEvent")\nRE.Name = "${1:EventName}"\nRE.Parent = game:GetService("ReplicatedStorage")\n\nRE.OnServerEvent:Connect(function(player${2:})\n\t$0\nend)', doc: 'Remote event server' },
+        { label: 'tween', insert: 'local TS = game:GetService("TweenService")\nlocal ti = TweenInfo.new(${1:1}, Enum.EasingStyle.${2:Quad})\nlocal tw = TS:Create(${3:inst}, ti, {${4:Prop = val}})\ntw:Play()', doc: 'Tween animation' },
+        { label: 'datastore', insert: 'local DS = game:GetService("DataStoreService")\nlocal store = DS:GetDataStore("${1:Name}")\n\nlocal ok, data = pcall(store.GetAsync, store, "Key_"..player.UserId)\nif ok then\n\t$0\nend', doc: 'DataStore load' },
+      ];
+      monaco.languages.registerCompletionItemProvider('lua', {
+        provideCompletionItems: (mdl, pos) => {
+          const w = mdl.getWordUntilPosition(pos);
+          const r = { startLineNumber: pos.lineNumber, endLineNumber: pos.lineNumber, startColumn: w.startColumn, endColumn: w.endColumn };
+          const s = [];
+          svcs.forEach(v => s.push({ label: v, kind: monaco.languages.CompletionItemKind.Module, insertText: v, range: r, detail: 'Service' }));
+          globs.forEach(v => s.push({ label: v, kind: monaco.languages.CompletionItemKind.Variable, insertText: v, range: r, detail: 'Global' }));
+          snips.forEach(v => s.push({ label: v.label, kind: monaco.languages.CompletionItemKind.Snippet, insertText: v.insert, insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet, range: r, detail: 'Snippet', documentation: v.doc }));
+          return { suggestions: s };
         }
-      }else{
-        const cm=resp.match(/```(?:luau|lua)\n([\s\S]+?)```/);
-        if(cm&&activeTab!==null)showAIBanner(cm[1]);
+      });
+    }
+
+    // ═══ MODE ═══
+    function setMode(m) {
+      currentMode = m;
+      document.getElementById('ch-badge').dataset.m = m;
+      document.getElementById('ch-badge').textContent = m.toUpperCase();
+      document.getElementById('s-mode').dataset.m = m;
+      document.getElementById('s-mode').textContent = m.toUpperCase();
+    }
+
+    // ═══ PROVIDER / MODEL ═══
+    function setProvider(p, silent) {
+      provider = p; localStorage.setItem('sq_provider', p);
+      const sel = document.getElementById('model-sel');
+      if (p === 'puter') {
+        sel.innerHTML = PUTER_MODELS.map(m => `<option value="${m.value}"${m.value === puterModel ? ' selected' : ''}>${m.label}</option>`).join('');
+      } else {
+        const models = getORModels();
+        sel.innerHTML = models.map(m => `<option value="${m.value}"${m.value === model ? ' selected' : ''}>${m.label}</option>`).join('');
+      }
+      sel.onchange = () => {
+        if (provider === 'openrouter') { model = sel.value; localStorage.setItem('sq_model', model) }
+        else { puterModel = sel.value; localStorage.setItem('sq_puter_model', puterModel) }
+        document.getElementById('s-model').textContent = sel.options[sel.selectedIndex]?.text || sel.value;
+      };
+      document.getElementById('s-model').textContent = sel.options[sel.selectedIndex]?.text || '';
+      document.getElementById('provider-sel').value = p;
+    }
+
+    // ═══ FILE SYSTEM / ROJO ═══
+    async function connectRojoFolder() {
+      if (!window.showDirectoryPicker) { showToast('Use Chrome or Edge for folder sync', 'error'); return }
+      try {
+        rojoDirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
+        await refreshFileTree();
+        updateRojoStatus(true);
+        // Check if rojo serve is running
+        checkRojoServer();
+        if (syncInterval) clearInterval(syncInterval);
+        syncInterval = setInterval(syncFromDisk, 2500);
+        showToast('Folder connected!', 'success');
+      } catch (e) { if (e.name !== 'AbortError') console.error(e) }
+    }
+
+    async function checkRojoServer() {
+      try {
+        const r = await fetch('http://localhost:34872/api/rojo', { signal: AbortSignal.timeout(2000) });
+        if (r.ok) {
+          const d = await r.json();
+          document.getElementById('rojo-lbl').textContent = `Rojo: ${d.serverVersion || 'Running'}`;
+          showToast('Rojo server detected on :34872!', 'success');
+        }
+      } catch {
+        document.getElementById('rojo-lbl').textContent = 'Rojo: File Sync';
       }
     }
-  }catch(e){removeThinking(thinkEl);setTyping(false);appendMsg('ai',`❌ ${e.message}`);return}
-  setTyping(false);
-}
 
-function showThinking(){
-  const c=document.getElementById('ch-msgs');const d=document.createElement('div');d.className='m';d.id='thinking-el';
-  d.innerHTML=`<div class="m-av ai">🍋</div><div class="m-body"><div class="thinking-wrap"><div class="thinking-header" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')"><span class="th-icon">▶</span> Thinking...<div class="thinking-dots"><div class="th-dot"></div><div class="th-dot"></div><div class="th-dot"></div></div></div><div class="thinking-body">Analyzing your request and current code context...</div></div></div>`;
-  c.appendChild(d);c.scrollTop=c.scrollHeight;return d;
-}
-function removeThinking(el){if(el&&el.parentNode)el.remove()}
+    function updateRojoStatus(on) {
+      const el = document.getElementById('rojo-ind');
+      const s = document.getElementById('s-rojo');
+      if (on) { el.classList.add('on'); s.textContent = '⚡ Connected'; s.style.color = 'var(--lime)' }
+      else { el.classList.remove('on'); s.textContent = '⊘ Disconnected'; s.style.color = '' }
+    }
 
-function appendMsg(role,text){
-  const c=document.getElementById('ch-msgs');const d=document.createElement('div');d.className=`m ${role==='user'?'u':''}`;
-  const now=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-  const parsed=parseMsg(text);
-  const filesMatch=text.match(/Rojo path:\s*([^\n]+)/g);
-  const filesHtml=filesMatch?`<div class="m-files">📝 ${filesMatch.length} file${filesMatch.length>1?'s':''} modified</div>`:'';
-  const actionsHtml=role!=='user'?`<div class="m-actions"><button class="m-act" onclick="copyMsg(this)">📋 Copy</button><button class="m-act" onclick="likeMsg(this)">👍</button><button class="m-act" onclick="dislikeMsg(this)">👎</button></div>`:'';
-  d.innerHTML=`<div class="m-av ${role==='user'?'us':'ai'}">${role==='user'?'U':'🍋'}</div>
+    async function refreshFileTree() {
+      if (!rojoDirHandle) return;
+      fileHandles.clear();
+      const t = document.getElementById('ftree');
+      t.innerHTML = '';
+      document.getElementById('exp-empty').style.display = 'none';
+      await buildTree(rojoDirHandle, t, '', 0);
+      document.getElementById('s-files').textContent = `${fileHandles.size} files`;
+    }
+
+    async function buildTree(dir, parent, base, depth) {
+      const entries = []; for await (const e of dir.values()) entries.push(e);
+      entries.sort((a, b) => { if (a.kind !== b.kind) return a.kind === 'directory' ? -1 : 1; return a.name.localeCompare(b.name) });
+      for (const e of entries) {
+        if (e.name.startsWith('.')) continue;
+        const p = base ? `${base}/${e.name}` : e.name;
+        if (e.kind === 'directory') {
+          const d = document.createElement('div'); d.className = 'fi dir'; d.dataset.depth = depth;
+          d.innerHTML = `${'<span class="fi-indent"></span>'.repeat(depth)}<span class="fi-icon">📁</span><span class="fi-name">${e.name}</span>`;
+          parent.appendChild(d);
+          const sub = await dir.getDirectoryHandle(e.name);
+          await buildTree(sub, parent, p, depth + 1);
+        } else {
+          if (!/\.(lua|luau|json|toml)$/i.test(e.name)) continue;
+          const h = await dir.getFileHandle(e.name);
+          fileHandles.set(p, h);
+          const isAI = aiCreatedFiles.has(p);
+          const isModTab = openTabs.find(t => t.path === p && t.modified);
+          const d = document.createElement('div');
+          d.className = 'fi' + (isAI ? ' ai-created' : '') + (isModTab ? ' ai-modified' : '');
+          d.dataset.depth = depth; d.dataset.path = p;
+          let badge = '';
+          if (isAI) badge = '<span class="fi-badge new">AI</span>';
+          else if (isModTab) badge = '<span class="fi-badge mod">●</span>';
+          const icon = e.name.endsWith('.json') ? '⚙' : e.name.endsWith('.toml') ? '🛠' : isAI ? '✨' : '📄';
+          d.innerHTML = `${'<span class="fi-indent"></span>'.repeat(depth)}<span class="fi-icon">${icon}</span><span class="fi-name">${e.name}</span>${badge}`;
+          d.onclick = () => openFile(p, e.name, h);
+          parent.appendChild(d);
+        }
+      }
+    }
+
+    async function openFile(path, name, handle) {
+      const idx = openTabs.findIndex(t => t.path === path);
+      if (idx !== -1) { switchTab(idx); return }
+      const f = await handle.getFile(); const c = await f.text();
+      openTabs.push({ path, name, content: c, orig: c, modified: false, handle });
+      saveVer(path, c, 'Opened');
+      switchTab(openTabs.length - 1);
+    }
+
+    function switchTab(i) {
+      if (i < 0 || i >= openTabs.length) return;
+      if (activeTab !== null && editor && openTabs[activeTab]) openTabs[activeTab].content = editor.getValue();
+      activeTab = i; const t = openTabs[i];
+      document.getElementById('empty-ed').style.display = 'none';
+      document.getElementById('monaco-editor').style.display = 'block';
+      if (editor) { editor.setValue(t.content); editor.focus() }
+      document.getElementById('cur-file').textContent = t.name;
+      document.getElementById('mod-dot').style.display = t.modified ? 'block' : 'none';
+      document.querySelectorAll('.fi').forEach(el => el.classList.toggle('active', el.dataset.path === t.path));
+      renderTabs();
+    }
+
+    function closeTab(i, e) {
+      if (e) e.stopPropagation(); openTabs.splice(i, 1);
+      if (!openTabs.length) { activeTab = null; document.getElementById('empty-ed').style.display = 'flex'; document.getElementById('monaco-editor').style.display = 'none'; document.getElementById('cur-file').textContent = 'No file open'; document.getElementById('mod-dot').style.display = 'none' }
+      else { if (activeTab >= openTabs.length) activeTab = openTabs.length - 1; switchTab(activeTab) }
+      renderTabs();
+    }
+
+    function renderTabs() {
+      document.getElementById('ed-tabs').innerHTML = openTabs.map((t, i) => `<div class="ed-tab ${i === activeTab ? 'active' : ''}" onclick="switchTab(${i})">📄 ${t.name}${t.modified ? '<div class="tab-dot"></div>' : ''}<button class="tab-x" onclick="closeTab(${i},event)">×</button></div>`).join('');
+    }
+
+    function updateModCount() {
+      const c = openTabs.filter(t => t.modified).length;
+      modifiedFilesCount = c;
+      const b = document.getElementById('files-modified-badge');
+      if (c > 0) { b.style.display = 'flex'; document.getElementById('files-mod-count').textContent = `${c} file${c > 1 ? 's' : ''} modified` }
+      else b.style.display = 'none';
+      const sv = document.getElementById('s-save');
+      if (c > 0) { sv.className = 's-save unsaved'; sv.innerHTML = '💾 Unsaved' }
+      else { sv.className = 's-save saved'; sv.innerHTML = '💾 Saved' }
+    }
+
+    async function saveFile() {
+      if (activeTab === null) return; const t = openTabs[activeTab];
+      if (!t.handle) { showToast('No file handle', 'error'); return }
+      const c = editor ? editor.getValue() : t.content;
+      try {
+        const w = await t.handle.createWritable(); await w.write(c); await w.close();
+        t.content = c; t.orig = c; t.modified = false; document.getElementById('mod-dot').style.display = 'none';
+        renderTabs(); updateModCount(); saveVer(t.path, c, 'Saved'); showToast(`Saved ${t.name}`, 'success');
+      } catch (e) { showToast('Save failed', 'error') }
+    }
+
+    async function createNewFile() {
+      const n = prompt('File name (e.g. SprintSystem.server.luau):'); if (!n) return;
+      const tpl = `-- [ServerScript]\n-- Rojo path: src/server/${n}\n\nlocal Players = game:GetService("Players")\n\n`;
+      if (rojoDirHandle) {
+        try {
+          let d = rojoDirHandle;
+          try { d = await rojoDirHandle.getDirectoryHandle('src', { create: true }) } catch { }
+          if (n.includes('.server.')) try { d = await d.getDirectoryHandle('server', { create: true }) } catch { }
+          else if (n.includes('.client.')) try { d = await d.getDirectoryHandle('client', { create: true }) } catch { }
+          else try { d = await d.getDirectoryHandle('shared', { create: true }) } catch { }
+          const h = await d.getFileHandle(n, { create: true }); const w = await h.createWritable(); await w.write(tpl); await w.close();
+          await refreshFileTree(); openFile(n, n, h); showToast(`Created ${n}`, 'success');
+        } catch { showToast('Failed to create file', 'error') }
+      } else { openTabs.push({ path: n, name: n, content: tpl, orig: tpl, modified: true, handle: null }); switchTab(openTabs.length - 1) }
+    }
+
+    async function syncFromDisk() {
+      if (!rojoDirHandle) return;
+      for (const [path, handle] of fileHandles) {
+        const i = openTabs.findIndex(t => t.path === path); if (i === -1) continue;
+        try {
+          const f = await handle.getFile(); const dc = await f.text(); const t = openTabs[i];
+          if (dc !== t.orig && dc !== t.content) { t.orig = dc; if (!t.modified) { t.content = dc; if (i === activeTab && editor) { const p = editor.getPosition(); editor.setValue(dc); if (p) editor.setPosition(p) } } }
+        } catch { }
+      }
+    }
+
+    async function saveToRojo(fname, code, ctx) {
+      if (!rojoDirHandle) return;
+      try {
+        let sub = 'server';
+        if (ctx.includes('[LocalScript]')) sub = 'client'; if (ctx.includes('[ModuleScript]')) sub = 'shared';
+        let src; try { src = await rojoDirHandle.getDirectoryHandle('src', { create: true }) } catch { src = rojoDirHandle }
+        let sd; try { sd = await src.getDirectoryHandle(sub, { create: true }) } catch { sd = src }
+        let fn = fname;
+        if (sub === 'server' && !fn.includes('.server.')) fn = fn.replace(/\.luau?$/, '.server.luau');
+        if (sub === 'client' && !fn.includes('.client.')) fn = fn.replace(/\.luau?$/, '.client.luau');
+        if (!fn.includes('.lua')) fn += '.luau';
+        const h = await sd.getFileHandle(fn, { create: true }); const w = await h.createWritable(); await w.write(code); await w.close();
+        showToast(`Synced ${fn}`, 'success'); await refreshFileTree();
+      } catch (e) { console.error('Rojo save:', e) }
+    }
+
+    // ═══ AUTONOMOUS FILE OPERATIONS ═══
+    let aiCreatedFiles = new Set();
+
+    async function gatherFolderTree(dir, prefix = '', depth = 0) {
+      if (depth > 4) return '';
+      let tree = ''; const entries = [];
+      try { for await (const e of dir.values()) entries.push(e) } catch { return '' }
+      entries.sort((a, b) => { if (a.kind !== b.kind) return a.kind === 'directory' ? -1 : 1; return a.name.localeCompare(b.name) });
+      for (const e of entries) {
+        if (e.name.startsWith('.')) continue;
+        const indent = '  '.repeat(depth);
+        if (e.kind === 'directory') {
+          tree += `${indent}📁 ${e.name}/\n`;
+          try { const sub = await dir.getDirectoryHandle(e.name); tree += await gatherFolderTree(sub, prefix + e.name + '/', depth + 1) } catch { }
+        } else {
+          if (/\.(lua|luau|json|toml)$/i.test(e.name)) tree += `${indent}📄 ${e.name}\n`;
+        }
+      }
+      return tree;
+    }
+
+    async function gatherProjectContext() {
+      if (!rojoDirHandle) return '';
+      let ctx = '\n\n=== FOLDER STRUCTURE ===\n';
+      ctx += await gatherFolderTree(rojoDirHandle);
+      ctx += '=== END FOLDER STRUCTURE ===\n';
+      ctx += '\n=== PROJECT FILES ===\n';
+      let count = 0;
+      for (const [path, handle] of fileHandles) {
+        if (count >= 20) break;
+        try {
+          const f = await handle.getFile(); const txt = await f.text();
+          if (txt.length > 8000) ctx += `\n--- ${path} (${txt.length} chars, truncated) ---\n${txt.slice(0, 4000)}\n...truncated...\n`;
+          else ctx += `\n--- ${path} ---\n${txt}\n`;
+          count++;
+        } catch { }
+      }
+      if (count === 0) ctx += '(No files in project yet — this is a fresh project. You should create files!)\n';
+      ctx += '=== END PROJECT FILES ===\n';
+      return ctx;
+    }
+
+    async function classifyAndResolve(rojoPath) {
+      let parts = rojoPath.replace(/^\s+|\s+$/g, '').split('/');
+      let dirPath, fileName;
+      if (SERVICE_PATH_MAP[parts[0]]) {
+        const mapped = SERVICE_PATH_MAP[parts[0]].split('/');
+        const suffix = SERVICE_SUFFIX_MAP[parts[0]] || '.luau';
+        fileName = parts.slice(1).join('/') || 'Script';
+        if (!fileName.includes('.lua')) fileName += suffix;
+        dirPath = mapped;
+      }
+      else if (parts[0] === 'src' && parts.length >= 3) {
+        dirPath = parts.slice(0, -1);
+        fileName = parts[parts.length - 1];
+        if (!fileName.includes('.lua')) {
+          if (parts[1] === 'server') fileName += '.server.luau';
+          else if (parts[1] === 'client') fileName += '.client.luau';
+          else fileName += '.luau';
+        }
+      }
+      else {
+        dirPath = ['src', 'server'];
+        fileName = parts[parts.length - 1] || 'Script';
+        if (!fileName.includes('.lua')) fileName += '.server.luau';
+      }
+      return { dirPath, fileName };
+    }
+
+    async function createFileAtPath(rojoPath, code) {
+      if (!rojoDirHandle) { showToast('Connect a folder first', 'error'); return null }
+      try {
+        const { dirPath, fileName } = await classifyAndResolve(rojoPath);
+        let dir = rojoDirHandle;
+        for (const seg of dirPath) {
+          try { dir = await dir.getDirectoryHandle(seg, { create: true }) } catch { break }
+        }
+        const h = await dir.getFileHandle(fileName, { create: true });
+        const w = await h.createWritable(); await w.write(code); await w.close();
+        await refreshFileTree();
+        const fullPath = dirPath.join('/') + '/' + fileName;
+        openFile(fullPath, fileName, h);
+        return { path: fullPath, name: fileName };
+      } catch (e) { console.error('createFileAtPath:', e); showToast(`Failed: ${e.message}`, 'error'); return null }
+    }
+
+    async function processAIFileOps(resp) {
+      const blocks = [];
+      const regex = /```(?:luau|lua)\n([\s\S]*?)```/g;
+      let match;
+      while ((match = regex.exec(resp)) !== null) {
+        const code = match[1];
+        const pathMatch = code.match(/--\s*Rojo\s*path:\s*([^\n]+)/i);
+        if (pathMatch) {
+          blocks.push({ path: pathMatch[1].trim(), code: code, isExisting: false });
+        } else {
+          const typeMatch = code.match(/--\s*\[(ServerScript|LocalScript|ModuleScript)\]/i);
+          const nameMatch = code.match(/--\s*([A-Z][a-zA-Z0-9_]+)/);
+          if (typeMatch) {
+            let sub = 'server';
+            if (typeMatch[1] === 'LocalScript') sub = 'client';
+            if (typeMatch[1] === 'ModuleScript') sub = 'shared';
+            const name = nameMatch ? nameMatch[1] : 'Script';
+            blocks.push({ path: `src/${sub}/${name}`, code: code, isExisting: false });
+          }
+        }
+      }
+      if (!blocks.length) return { count: 0, files: [] };
+      for (const block of blocks) {
+        const { dirPath, fileName } = await classifyAndResolve(block.path);
+        const fullPath = dirPath.join('/') + '/' + fileName;
+        block.resolvedPath = fullPath;
+        block.resolvedName = fileName;
+        block.isExisting = fileHandles.has(fullPath);
+      }
+      let created = 0;
+      const results = [];
+      for (const block of blocks) {
+        const result = await createFileAtPath(block.path, block.code);
+        if (result) {
+          created++;
+          aiCreatedFiles.add(result.path);
+          saveVer(result.path, block.code, block.isExisting ? 'AI Modified' : 'AI Created');
+          const lines = block.code.split('\n').length;
+          results.push({ name: result.name, path: result.path, lines: lines, isNew: !block.isExisting });
+        }
+      }
+      if (created > 0) {
+        showToast(`📁 ${created} file${created > 1 ? 's' : ''} ${blocks.some(b => b.isExisting) ? 'updated' : 'created'}`, 'success');
+        await refreshFileTree();
+      }
+      return { count: created, files: results };
+    }
+
+    function buildFileOpsHtml(files) {
+      if (!files || !files.length) return '';
+      let html = '<div style="display:flex;flex-direction:column;gap:4px;margin-top:6px">';
+      for (const f of files) {
+        html += `<div class="file-op-card" onclick="openFileByPath('${f.path}')">`;
+        html += `<div class="file-op-card-head">`;
+        html += `<span class="file-op-icon">${f.isNew ? '📄' : '✏️'}</span>`;
+        html += `<div class="file-op-info"><div class="file-op-name">${f.name}</div><div class="file-op-path">${f.path}</div></div>`;
+        html += `<span class="file-op-badge ${f.isNew ? 'created' : 'modified'}">${f.isNew ? 'CREATED' : 'MODIFIED'}</span>`;
+        html += `</div>`;
+        html += `<div class="file-op-lines">📏 ${f.lines} lines</div>`;
+        html += `</div>`;
+      }
+      html += `</div>`;
+      html += `<div class="file-ops-summary">✨ ${files.length} file${files.length > 1 ? 's' : ''} written to project — click to view</div>`;
+      return html;
+    }
+
+    function stripCodeBlocksFromResp(text) {
+      return text.replace(/```(?:luau|lua)\n[\s\S]*?```/g, '').replace(/\n{3,}/g, '\n\n').trim();
+    }
+
+    async function openFileByPath(path) {
+      const handle = fileHandles.get(path);
+      if (handle) {
+        const name = path.split('/').pop();
+        openFile(path, name, handle);
+      }
+    }
+
+    async function readFileByPath(path) {
+      const handle = fileHandles.get(path);
+      if (!handle) return null;
+      try { const f = await handle.getFile(); return await f.text() } catch { return null }
+    }
+
+    // ═══ VERSIONS ═══
+    function saveVer(p, c, l) { if (!versionHistory[p]) versionHistory[p] = []; versionHistory[p].push({ time: Date.now(), content: c, label: l || 'Edit' }); if (versionHistory[p].length > 30) versionHistory[p].shift() }
+    function openVersions() {
+      if (activeTab === null) return; const t = openTabs[activeTab]; const vs = versionHistory[t.path] || [];
+      document.getElementById('ver-label').textContent = `Versions of ${t.name}`;
+      const el = document.getElementById('ver-list');
+      if (!vs.length) { el.innerHTML = '<div style="color:var(--text-muted);text-align:center;padding:16px;font-size:11px">No versions yet.</div>' }
+      else {
+        el.innerHTML = vs.slice().reverse().map((_, i) => {
+          const ri = vs.length - 1 - i; const v = vs[ri];
+          return `<div class="vl-item"><div class="vl-meta"><div class="vl-time">${new Date(v.time).toLocaleString()}</div><div class="vl-label">${v.label}</div></div><button class="vl-restore" onclick="restoreVer(${ri})">Restore</button></div>`
+        }).join('')
+      }
+      document.getElementById('ver-mo').classList.add('open');
+    }
+    function closeVersions() { document.getElementById('ver-mo').classList.remove('open') }
+    function restoreVer(i) {
+      if (activeTab === null) return; const t = openTabs[activeTab]; const v = versionHistory[t.path]; if (!v || !v[i]) return;
+      if (editor) editor.setValue(v[i].content); t.content = v[i].content; t.modified = true; renderTabs(); closeVersions(); showToast('Restored', 'success')
+    }
+
+    // ═══ AI CHANGES ═══
+    function showAIBanner(code) { pendingAICode = code; document.getElementById('ai-banner-t').textContent = `AI proposes changes${activeTab !== null ? ' to ' + openTabs[activeTab].name : ''}`; document.getElementById('ai-banner').classList.add('show') }
+    function acceptAI() { if (!pendingAICode) return; if (activeTab !== null && editor) { saveVer(openTabs[activeTab].path, editor.getValue(), 'Before AI'); editor.setValue(pendingAICode); openTabs[activeTab].content = pendingAICode; openTabs[activeTab].modified = true; renderTabs(); updateModCount(); saveVer(openTabs[activeTab].path, pendingAICode, 'AI applied') } document.getElementById('ai-banner').classList.remove('show'); pendingAICode = null; showToast('Applied', 'success') }
+    function rejectAI() { pendingAICode = null; document.getElementById('ai-banner').classList.remove('show'); showToast('Rejected', 'error') }
+
+    // ═══ AI CHAT ═══
+    async function sendMessage(override) {
+      const inp = document.getElementById('ci'); const txt = override || inp.value.trim(); if (!txt || isTyping) return;
+      inp.value = ''; autoR(inp);
+      appendMsg('user', txt);
+      let ctx = txt;
+      if (currentMode === 'agentic' || currentMode === 'debugging') {
+        let fileCtx = '';
+        if (activeTab !== null && editor) {
+          fileCtx = `\n[Currently Editing: ${openTabs[activeTab].name}]\n\`\`\`luau\n${editor.getValue()}\n\`\`\`\n`;
+        }
+        const projCtx = await gatherProjectContext();
+        ctx = `${fileCtx}${projCtx}\nRequest: ${txt}`;
+      }
+      messages.push({ role: 'user', content: ctx });
+      setTyping(true);
+
+      const thinkEl = showThinking();
+
+      try {
+        const sys = document.getElementById('s-prompt')?.value?.trim() || MODE_PROMPTS[currentMode];
+        let resp = '';
+        if (provider === 'openrouter') {
+          if (!apiKey) throw new Error('No API key. Add one in Settings.');
+          const cm = document.getElementById('model-sel').value;
+          const r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}`, 'HTTP-Referer': location.href, 'X-Title': 'Squeeze IDE' },
+            body: JSON.stringify({ model: cm, stream: true, messages: [{ role: 'system', content: sys }, ...messages.slice(-12)] })
+          });
+          if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e?.error?.message || `HTTP ${r.status}`) }
+          const rd = r.body.getReader(), dc = new TextDecoder();
+          removeThinking(thinkEl);
+          const aiEl = appendStreamMsg();
+          while (true) {
+            const { done, value } = await rd.read(); if (done) break;
+            for (const ln of dc.decode(value).split('\n').filter(l => l.startsWith('data: '))) {
+              const d = ln.slice(6); if (d === '[DONE]') break;
+              try { resp += JSON.parse(d).choices?.[0]?.delta?.content || ''; updateStreamMsg(aiEl, resp) } catch { }
+            }
+          }
+        } else {
+          if (typeof puter === 'undefined') throw new Error('Puter.js not loaded.');
+          const selectedModel = document.getElementById('model-sel').value;
+          const pm = [{ role: 'system', content: sys }, ...messages.slice(-12)];
+          removeThinking(thinkEl);
+          const aiEl = appendStreamMsg();
+          if (selectedModel === 'x-ai/grok-4.20-multi-agent') {
+            updateStreamMsg(aiEl, '🔄 **Mercury-2** is decomposing your task into 4 sub-tasks...');
+            try {
+              const decomp = await puter.ai.chat([{ role: 'system', content: 'You are a task decomposition agent. Break the following coding task into exactly 4 logical, non-overlapping sub-tasks that together fully address the request. Output ONLY a JSON array of 4 strings. No markdown, no explanation, no code fences.' }, { role: 'user', content: ctx }], { model: 'inception/mercury-2' });
+              const rawD = typeof decomp === 'string' ? decomp : decomp?.message?.content ?? decomp?.choices?.[0]?.message?.content ?? '';
+              let subtasks; try { subtasks = JSON.parse(rawD.match(/\[[\s\S]*\]/)?.[0] || '[]') } catch { subtasks = [] }
+              if (subtasks.length !== 4) { const q = ctx; subtasks = [q + ' (Part 1: core logic)', q + ' (Part 2: error handling)', q + ' (Part 3: integration)', q + ' (Part 4: optimization)'] }
+              updateStreamMsg(aiEl, '🚀 Dispatching to **4 Grok agents** in parallel...\n\n' + subtasks.map((s, i) => '**Agent ' + (i + 1) + ':** ' + s).join('\n'));
+              const results = await Promise.all(subtasks.map((task, i) => puter.ai.chat([{ role: 'system', content: sys + '\nYou are Agent ' + (i + 1) + ' of 4 in a multi-agent system. Your specific sub-task: ' + task + '\nFocus ONLY on your sub-task. Be thorough and precise.' }, ...messages.slice(-8), { role: 'user', content: task }], { model: 'x-ai/grok-4.20-multi-agent' })));
+              resp = '# 🤖 Multi-Agent Results\n\n*Task decomposed by Mercury-2, executed by 4 Grok agents*\n';
+              results.forEach((r, i) => { const t = typeof r === 'string' ? r : r?.message?.content ?? r?.choices?.[0]?.message?.content ?? ''; resp += '\n---\n## Agent ' + (i + 1) + ' — ' + subtasks[i] + '\n\n' + t });
+              updateStreamMsg(aiEl, resp);
+            } catch (e2) { resp = '❌ Multi-agent error: ' + e2.message; updateStreamMsg(aiEl, resp) }
+          }
+          else if ((selectedModel === 'inception/mercury-2' || selectedModel === 'inception/mercury-coder') && (currentMode === 'planning' || currentMode === 'debugging')) {
+            updateStreamMsg(aiEl, '🔭 **Mercury Duo** — running Mercury-2 + Mercury-Coder in parallel...');
+            try {
+              const [analysis, codeReview] = await Promise.all([
+                puter.ai.chat([{ role: 'system', content: sys + '\n\nYou are Mercury-2, the architecture and high-level analysis agent. Focus on system design, patterns, data flow, strategic recommendations, and overall structure.' }, ...messages.slice(-8), { role: 'user', content: ctx }], { model: 'inception/mercury-2' }),
+                puter.ai.chat([{ role: 'system', content: sys + '\n\nYou are Mercury-Coder, the code specialist agent. Focus on implementation details, code quality, concrete fixes, specific code examples, and technical accuracy.' }, ...messages.slice(-8), { role: 'user', content: ctx }], { model: 'inception/mercury-coder' })
+              ]);
+              const aT = typeof analysis === 'string' ? analysis : analysis?.message?.content ?? analysis?.choices?.[0]?.message?.content ?? '';
+              const cT = typeof codeReview === 'string' ? codeReview : codeReview?.message?.content ?? codeReview?.choices?.[0]?.message?.content ?? '';
+              resp = '# 🔭 Mercury-2 — ' + (currentMode === 'debugging' ? 'Bug Analysis' : 'Architecture Plan') + '\n\n' + aT + '\n\n---\n\n# 💻 Mercury-Coder — ' + (currentMode === 'debugging' ? 'Fix Implementation' : 'Code Blueprint') + '\n\n' + cT;
+              updateStreamMsg(aiEl, resp);
+            } catch (e2) { resp = '❌ Mercury collaboration error: ' + e2.message; updateStreamMsg(aiEl, resp) }
+          }
+          else {
+            try {
+              const st = await puter.ai.chat(pm, { model: selectedModel, stream: true });
+              for await (const p of st) { const c = p?.text ?? p?.delta?.content ?? p?.choices?.[0]?.delta?.content ?? ''; if (c) { resp += c; updateStreamMsg(aiEl, resp) } }
+            }
+            catch {
+              const r = await puter.ai.chat(pm, { model: selectedModel });
+              resp = typeof r === 'string' ? r : r?.message?.content ?? r?.choices?.[0]?.message?.content ?? String(r); updateStreamMsg(aiEl, resp)
+            }
+          }
+        }
+        messages.push({ role: 'assistant', content: resp });
+
+        if (currentMode === 'agentic' || currentMode === 'debugging') {
+          const result = await processAIFileOps(resp);
+          if (result.count > 0) {
+            const streamEl = document.querySelector('.stream-bub')?.closest('.m');
+            if (streamEl) {
+              const b = streamEl.querySelector('.m-body');
+              const explanation = stripCodeBlocksFromResp(resp);
+              const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+              const explHtml = explanation ? parseMsg(explanation) : '';
+              const fileCardsHtml = buildFileOpsHtml(result.files);
+              b.innerHTML = `${explHtml}${fileCardsHtml}<div class="m-actions"><button class="m-act" onclick="copyMsg(this)">📋 Copy</button><button class="m-act" onclick="likeMsg(this)">👍</button><button class="m-act" onclick="dislikeMsg(this)">👎</button></div><div class="m-time">${now}</div>`;
+            }
+          } else {
+            const cm = resp.match(/```(?:luau|lua)\n([\s\S]+?)```/);
+            if (cm && activeTab !== null) showAIBanner(cm[1]);
+          }
+        }
+      } catch (e) { removeThinking(thinkEl); setTyping(false); appendMsg('ai', `❌ ${e.message}`); return }
+      setTyping(false);
+    }
+
+    function showThinking() {
+      const c = document.getElementById('ch-msgs'); const d = document.createElement('div'); d.className = 'm'; d.id = 'thinking-el';
+      d.innerHTML = `<div class="m-av ai">🍋</div><div class="m-body"><div class="thinking-wrap"><div class="thinking-header" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')"><span class="th-icon">▶</span> Thinking...<div class="thinking-dots"><div class="th-dot"></div><div class="th-dot"></div><div class="th-dot"></div></div></div><div class="thinking-body">Analyzing your request and current code context...</div></div></div>`;
+      c.appendChild(d); c.scrollTop = c.scrollHeight; return d;
+    }
+    function removeThinking(el) { if (el && el.parentNode) el.remove() }
+
+    function appendMsg(role, text) {
+      const c = document.getElementById('ch-msgs'); const d = document.createElement('div'); d.className = `m ${role === 'user' ? 'u' : ''}`;
+      const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const parsed = parseMsg(text);
+      const filesMatch = text.match(/Rojo path:\s*([^\n]+)/g);
+      const filesHtml = filesMatch ? `<div class="m-files">📝 ${filesMatch.length} file${filesMatch.length > 1 ? 's' : ''} modified</div>` : '';
+      const actionsHtml = role !== 'user' ? `<div class="m-actions"><button class="m-act" onclick="copyMsg(this)">📋 Copy</button><button class="m-act" onclick="likeMsg(this)">👍</button><button class="m-act" onclick="dislikeMsg(this)">👎</button></div>` : '';
+      d.innerHTML = `<div class="m-av ${role === 'user' ? 'us' : 'ai'}">${role === 'user' ? 'U' : '🍋'}</div>
     <div class="m-body">${parsed}${filesHtml}${actionsHtml}<div class="m-time">${now}</div></div>`;
-  c.appendChild(d);c.scrollTop=c.scrollHeight;
-}
+      c.appendChild(d); c.scrollTop = c.scrollHeight;
+    }
 
-function appendStreamMsg(){
-  const c=document.getElementById('ch-msgs');
-  const t=document.getElementById('typing-msg');if(t)t.remove();
-  const d=document.createElement('div');d.className='m';
-  d.innerHTML=`<div class="m-av ai">🍋</div><div class="m-body"><div class="m-bub stream-bub">▋</div></div>`;
-  c.appendChild(d);c.scrollTop=c.scrollHeight;return d;
-}
+    function appendStreamMsg() {
+      const c = document.getElementById('ch-msgs');
+      const t = document.getElementById('typing-msg'); if (t) t.remove();
+      const d = document.createElement('div'); d.className = 'm';
+      d.innerHTML = `<div class="m-av ai">🍋</div><div class="m-body"><div class="m-bub stream-bub">▋</div></div>`;
+      c.appendChild(d); c.scrollTop = c.scrollHeight; return d;
+    }
 
-function updateStreamMsg(el,text){
-  const b=el.querySelector('.m-body');const now=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-  const filesMatch=text.match(/Rojo path:\s*([^\n]+)/g);
-  const filesHtml=filesMatch?`<div class="m-files">📝 ${filesMatch.length} file${filesMatch.length>1?'s':''} modified</div>`:'';
-  b.innerHTML=`<div class="stream-bub">${parseMsg(text+'▋')}</div>${filesHtml}<div class="m-actions"><button class="m-act" onclick="copyMsg(this)">📋 Copy</button><button class="m-act" onclick="likeMsg(this)">👍</button><button class="m-act" onclick="dislikeMsg(this)">👎</button></div><div class="m-time">${now}</div>`;
-  document.getElementById('ch-msgs').scrollTop=99999;
-}
+    function updateStreamMsg(el, text) {
+      const b = el.querySelector('.m-body'); const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const filesMatch = text.match(/Rojo path:\s*([^\n]+)/g);
+      const filesHtml = filesMatch ? `<div class="m-files">📝 ${filesMatch.length} file${filesMatch.length > 1 ? 's' : ''} modified</div>` : '';
+      b.innerHTML = `<div class="stream-bub">${parseMsg(text + '▋')}</div>${filesHtml}<div class="m-actions"><button class="m-act" onclick="copyMsg(this)">📋 Copy</button><button class="m-act" onclick="likeMsg(this)">👍</button><button class="m-act" onclick="dislikeMsg(this)">👎</button></div><div class="m-time">${now}</div>`;
+      document.getElementById('ch-msgs').scrollTop = 99999;
+    }
 
-function parseMsg(text){
-  const parts=text.split(/(```[\s\S]*?```)/g);let html='';
-  parts.forEach(p=>{
-    if(p.startsWith('```')){const ls=p.slice(3,-3).split('\n');const lang=ls[0]||'luau';const code=ls.slice(1).join('\n');const id='c'+Math.random().toString(36).slice(2);
-      html+=`<div class="cc-block" id="${id}"><div class="cc-head"><span class="cc-lang">${lang.toUpperCase()}</span><div class="cc-acts"><button class="cc-btn" onclick="navigator.clipboard.writeText(document.getElementById('${id}_c').innerText);showToast('Copied!','success')">Copy</button><button class="cc-btn apply" onclick="applyBlock('${id}')">⚡ Apply</button></div></div><div class="cc-code" id="${id}_c">${syntaxHL(escapeHtml(code))}</div></div>`;
-    }else if(p.trim()){html+=`<div class="m-bub">${escapeHtml(p).replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/`([^`]+)`/g,'<code>$1</code>')}</div>`}
-  });return html;
-}
+    function parseMsg(text) {
+      const parts = text.split(/(```[\s\S]*?```)/g); let html = '';
+      parts.forEach(p => {
+        if (p.startsWith('```')) {
+          const ls = p.slice(3, -3).split('\n'); const lang = ls[0] || 'luau'; const code = ls.slice(1).join('\n'); const id = 'c' + Math.random().toString(36).slice(2);
+          html += `<div class="cc-block" id="${id}"><div class="cc-head"><span class="cc-lang">${lang.toUpperCase()}</span><div class="cc-acts"><button class="cc-btn" onclick="navigator.clipboard.writeText(document.getElementById('${id}_c').innerText);showToast('Copied!','success')">Copy</button><button class="cc-btn apply" onclick="applyBlock('${id}')">⚡ Apply</button></div></div><div class="cc-code" id="${id}_c">${syntaxHL(escapeHtml(code))}</div></div>`;
+        } else if (p.trim()) { html += `<div class="m-bub">${escapeHtml(p).replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/`([^`]+)`/g, '<code>$1</code>')}</div>` }
+      }); return html;
+    }
 
-function applyBlock(id){const el=document.getElementById(id+'_c');if(!el)return;showAIBanner(el.innerText.trim())}
+    function applyBlock(id) { const el = document.getElementById(id + '_c'); if (!el) return; showAIBanner(el.innerText.trim()) }
 
-function copyMsg(btn){
-  const body=btn.closest('.m-body');if(!body)return;
-  const text=Array.from(body.querySelectorAll('.m-bub, .cc-code')).map(el=>el.innerText).join('\n\n');
-  navigator.clipboard.writeText(text.trim());btn.textContent='✓ Copied';setTimeout(()=>btn.textContent='📋 Copy',1500);
-}
-function likeMsg(btn){btn.classList.toggle('liked');if(btn.classList.contains('liked'))showToast('Thanks for the feedback!','success')}
-function dislikeMsg(btn){btn.classList.toggle('disliked');if(btn.classList.contains('disliked'))showToast('Noted, I\'ll try to improve','success')}
+    function copyMsg(btn) {
+      const body = btn.closest('.m-body'); if (!body) return;
+      const text = Array.from(body.querySelectorAll('.m-bub, .cc-code')).map(el => el.innerText).join('\n\n');
+      navigator.clipboard.writeText(text.trim()); btn.textContent = '✓ Copied'; setTimeout(() => btn.textContent = '📋 Copy', 1500);
+    }
+    function likeMsg(btn) { btn.classList.toggle('liked'); if (btn.classList.contains('liked')) showToast('Thanks for the feedback!', 'success') }
+    function dislikeMsg(btn) { btn.classList.toggle('disliked'); if (btn.classList.contains('disliked')) showToast('Noted, I\'ll try to improve', 'success') }
 
-function setTyping(on){
-  isTyping=on;document.getElementById('send-btn').disabled=on;
-  const ex=document.getElementById('typing-msg');
-  if(on&&!ex){const c=document.getElementById('ch-msgs');const d=document.createElement('div');d.className='m';d.id='typing-msg';
-    d.innerHTML=`<div class="m-av ai">🍋</div><div class="m-body"><div class="m-bub" style="padding:6px 10px"><div class="typ-ind"><div class="td"></div><div class="td"></div><div class="td"></div></div></div></div>`;
-    c.appendChild(d);c.scrollTop=c.scrollHeight}else if(!on&&ex)ex.remove();
-}
-function clearChat(){document.getElementById('ch-msgs').innerHTML='';messages=[];appendMsg('ai','Chat cleared. What shall we build?')}
+    function setTyping(on) {
+      isTyping = on; document.getElementById('send-btn').disabled = on;
+      const ex = document.getElementById('typing-msg');
+      if (on && !ex) {
+        const c = document.getElementById('ch-msgs'); const d = document.createElement('div'); d.className = 'm'; d.id = 'typing-msg';
+        d.innerHTML = `<div class="m-av ai">🍋</div><div class="m-body"><div class="m-bub" style="padding:6px 10px"><div class="typ-ind"><div class="td"></div><div class="td"></div><div class="td"></div></div></div></div>`;
+        c.appendChild(d); c.scrollTop = c.scrollHeight
+      } else if (!on && ex) ex.remove();
+    }
+    function clearChat() { document.getElementById('ch-msgs').innerHTML = ''; messages = []; appendMsg('ai', 'Chat cleared. What shall we build?') }
 
-// ═══ PUTER ═══
-async function initPuter(){try{if(typeof puter==='undefined')return;const s=await puter.auth.isSignedIn();if(s)puterReady=true}catch{}}
+    // ═══ PUTER ═══
+    async function initPuter() { try { if (typeof puter === 'undefined') return; const s = await puter.auth.isSignedIn(); if (s) puterReady = true } catch { } }
 
-// ═══ SETTINGS ═══
-function openSettings(){
-  document.getElementById('settings-mo').classList.add('open');
-  document.getElementById('s-key').value=apiKey;
-  const cm=localStorage.getItem('sq_custom_models_raw')||'';
-  document.getElementById('s-custom-models').value=cm;
-}
-function closeSettings(){document.getElementById('settings-mo').classList.remove('open')}
-function saveSettings(){
-  apiKey=document.getElementById('s-key').value.trim();localStorage.setItem('sq_api_key',apiKey);
-  const raw=document.getElementById('s-custom-models').value.trim();
-  localStorage.setItem('sq_custom_models_raw',raw);
-  if(raw){
-    const parsed=raw.split('\n').map(l=>{const[v,lb]=l.split('|');return v?.trim()?{value:v.trim(),label:(lb||v).trim()}:null}).filter(Boolean);
-    if(parsed.length){customModels=parsed;localStorage.setItem('sq_custom_models',JSON.stringify(parsed))}
-  }else{customModels=null;localStorage.removeItem('sq_custom_models')}
-  setProvider(provider);
-  closeSettings();showToast('Settings saved','success');
-}
+    // ═══ SETTINGS ═══
+    function openSettings() {
+      document.getElementById('settings-mo').classList.add('open');
+      document.getElementById('s-key').value = apiKey;
+      const cm = localStorage.getItem('sq_custom_models_raw') || '';
+      document.getElementById('s-custom-models').value = cm;
+    }
+    function closeSettings() { document.getElementById('settings-mo').classList.remove('open') }
+    function saveSettings() {
+      apiKey = document.getElementById('s-key').value.trim(); localStorage.setItem('sq_api_key', apiKey);
+      const raw = document.getElementById('s-custom-models').value.trim();
+      localStorage.setItem('sq_custom_models_raw', raw);
+      if (raw) {
+        const parsed = raw.split('\n').map(l => { const [v, lb] = l.split('|'); return v?.trim() ? { value: v.trim(), label: (lb || v).trim() } : null }).filter(Boolean);
+        if (parsed.length) { customModels = parsed; localStorage.setItem('sq_custom_models', JSON.stringify(parsed)) }
+      } else { customModels = null; localStorage.removeItem('sq_custom_models') }
+      setProvider(provider);
+      closeSettings(); showToast('Settings saved', 'success');
+    }
 
-function openRojoTutorial(){document.getElementById('rojo-mo').classList.add('open')}
-function closeRojoTutorial(){document.getElementById('rojo-mo').classList.remove('open')}
+    function openRojoTutorial() { document.getElementById('rojo-mo').classList.add('open') }
+    function closeRojoTutorial() { document.getElementById('rojo-mo').classList.remove('open') }
 
-// ═══ UTILS ═══
-function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage()}}
-function autoR(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,100)+'px'}
-function showToast(msg,type='success'){const t=document.getElementById('toast');document.getElementById('tm').textContent=msg;document.getElementById('ti').textContent=type==='success'?'✓':'✕';t.className='show '+type;clearTimeout(t._t);t._t=setTimeout(()=>t.className='',2500)}
-function escapeHtml(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
-function syntaxHL(c){return c.replace(/--\[([=]*)\[[\s\S]*?\](\1)\]/g,m=>`<span class="cmt">${m}</span>`).replace(/--[^\n]*/g,m=>`<span class="cmt">${m}</span>`).replace(/\b(local|function|end|if|then|else|elseif|for|while|do|return|in|and|or|not|true|false|nil|repeat|until|break|continue|type|export)\b/g,'<span class="kw">$1</span>').replace(/"([^"\\]|\\.)*"|'([^'\\]|\\.)*'/g,m=>`<span class="str">${m}</span>`).replace(/\b(\d+\.?\d*)\b/g,'<span class="num">$1</span>').replace(/\b(game|workspace|Players|RunService|UserInputService|TweenService|ReplicatedStorage|ServerScriptService|StarterGui|SoundService|Debris|HttpService|DataStoreService|ContextActionService|CollectionService|ServerStorage|StarterPlayer|MarketplaceService|Lighting)\b/g,'<span class="builtin">$1</span>').replace(/\b([a-zA-Z_][a-zA-Z0-9_]*)\s*(?=\()/g,'<span class="fn-name">$1</span>')}
-</script>
+    // ═══ UTILS ═══
+    function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage() } }
+    function autoR(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 100) + 'px' }
+    function showToast(msg, type = 'success') { const t = document.getElementById('toast'); document.getElementById('tm').textContent = msg; document.getElementById('ti').textContent = type === 'success' ? '✓' : '✕'; t.className = 'show ' + type; clearTimeout(t._t); t._t = setTimeout(() => t.className = '', 2500) }
+    function escapeHtml(t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }
+    function syntaxHL(c) { return c.replace(/--\[([=]*)\[[\s\S]*?\](\1)\]/g, m => `<span class="cmt">${m}</span>`).replace(/--[^\n]*/g, m => `<span class="cmt">${m}</span>`).replace(/\b(local|function|end|if|then|else|elseif|for|while|do|return|in|and|or|not|true|false|nil|repeat|until|break|continue|type|export)\b/g, '<span class="kw">$1</span>').replace(/"([^"\\]|\\.)*"|'([^'\\]|\\.)*'/g, m => `<span class="str">${m}</span>`).replace(/\b(\d+\.?\d*)\b/g, '<span class="num">$1</span>').replace(/\b(game|workspace|Players|RunService|UserInputService|TweenService|ReplicatedStorage|ServerScriptService|StarterGui|SoundService|Debris|HttpService|DataStoreService|ContextActionService|CollectionService|ServerStorage|StarterPlayer|MarketplaceService|Lighting)\b/g, '<span class="builtin">$1</span>').replace(/\b([a-zA-Z_][a-zA-Z0-9_]*)\s*(?=\()/g, '<span class="fn-name">$1</span>') }
+  </script>
 </body>
+
 </html>
