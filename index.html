@@ -413,32 +413,67 @@ const DEFAULT_OR_MODELS=[
 ];
 function getORModels(){return customModels&&customModels.length?customModels:DEFAULT_OR_MODELS}
 
+// Roblox service → Rojo folder mapping
+const SERVICE_PATH_MAP={
+  'ServerScriptService':'src/server','ServerStorage':'src/server',
+  'ReplicatedStorage':'src/shared','ReplicatedFirst':'src/shared',
+  'StarterGui':'src/client','StarterPlayer':'src/client','StarterPack':'src/client',
+  'Workspace':'src/shared','Lighting':'src/shared','SoundService':'src/shared',
+  'server':'src/server','client':'src/client','shared':'src/shared'
+};
+const SERVICE_SUFFIX_MAP={
+  'ServerScriptService':'.server.luau','ServerStorage':'.server.luau',
+  'StarterGui':'.client.luau','StarterPlayer':'.client.luau','StarterPack':'.client.luau',
+  'ReplicatedStorage':'.luau','ReplicatedFirst':'.luau',
+  'server':'.server.luau','client':'.client.luau','shared':'.luau'
+};
+
 const MODE_PROMPTS={
-agentic:`You are Squeeze, an expert Roblox Luau coding AI agent. AGENTIC MODE — you actively write and modify code.
-Rules:
-- Always output COMPLETE file content in a \`\`\`luau code block
+agentic:`You are Squeeze, an expert Roblox Luau coding AI agent. AGENTIC MODE — you are FULLY AUTONOMOUS. You can create, edit, and read files directly in the user's Rojo project.
+
+FILE OPERATION RULES:
+- You MUST include a Rojo path comment at the top of EVERY code block: -- Rojo path: src/server|client|shared/FileName.server|client.luau
+- For MULTIPLE files, output MULTIPLE separate \`\`\`luau code blocks, each with its own Rojo path
+- Files are AUTO-CREATED and AUTO-SAVED to the correct location. You don't need to ask — just do it.
+- Add -- [ServerScript], -- [LocalScript], or -- [ModuleScript] as the FIRST line
+
+ROBLOX SERVICE → ROJO PATH MAPPING:
+- ServerScriptService / ServerStorage → src/server/Name.server.luau
+- StarterGui / StarterPlayer / StarterPack → src/client/Name.client.luau
+- ReplicatedStorage / ReplicatedFirst → src/shared/Name.luau (ModuleScripts)
+- Workspace scripts → src/shared/Name.luau
+
+CODE RULES:
 - Write production-ready Luau (not Lua 5.x)
 - Use game:GetService() for all services
-- Add -- [ServerScript], -- [LocalScript], or -- [ModuleScript] labels
-- Add -- Rojo path: src/server|client|shared/Name.server|client.luau
 - Use modern Roblox APIs, handle errors with pcall
 - Clear comments explaining logic
-- When editing existing code, output the FULL updated file`,
+- When editing existing code, output the FULL updated file
+- You have access to ALL files in the project — they are provided in context
+
+When a user asks to "create a sprint system" or "add a leaderboard", you AUTONOMOUSLY:
+1. Decide which services/folders the scripts belong in
+2. Create ALL necessary files with correct Rojo paths
+3. Write complete, working code
+4. The files will be auto-created in the project`,
 
 planning:`You are Squeeze in PLANNING MODE. Help plan Roblox game architecture WITHOUT writing code:
 - Suggest system architectures with module boundaries
-- Recommend Rojo folder structures
+- Recommend Rojo folder structures with exact paths (src/server, src/client, src/shared)
 - Plan server/client data flows
-- List scripts needed and their responsibilities
+- List scripts needed, their Rojo paths, and responsibilities
 - Use pseudocode outlines, NOT actual Luau
-- Format with clear headings and bullets`,
+- Format with clear headings and bullets
+- You have access to ALL project files for context`,
 
 debugging:`You are Squeeze in DEBUGGING MODE. Analyze Luau code for issues:
-- Identify bugs with line references
+- You have access to ALL project files — check cross-file dependencies
+- Identify bugs with file names and line references
 - Rate severity: 🔴 Critical, 🟡 Warning, 🟢 Info
 - Check for: memory leaks, race conditions, deprecated APIs, type errors, nil access, infinite loops, missing Destroy()
-- Provide exact fixes for each issue
-- Give overall code health summary`
+- Provide exact fixes for each issue with complete corrected code blocks (include Rojo path)
+- Give overall code health summary
+- Fixes are auto-applied when you include Rojo paths in code blocks`
 };
 
 // ═══ INIT ═══
@@ -704,6 +739,122 @@ async function saveToRojo(fname,code,ctx){
   }catch(e){console.error('Rojo save:',e)}
 }
 
+// ═══ AUTONOMOUS FILE OPERATIONS ═══
+async function gatherProjectContext(){
+  if(!rojoDirHandle)return '';
+  let ctx='\n\n=== PROJECT FILES ===\n';
+  let count=0;
+  for(const[path,handle]of fileHandles){
+    if(count>=20)break; // cap to avoid token overflow
+    try{
+      const f=await handle.getFile();const txt=await f.text();
+      if(txt.length>8000)ctx+=`\n--- ${path} (${txt.length} chars, truncated) ---\n${txt.slice(0,4000)}\n...truncated...\n`;
+      else ctx+=`\n--- ${path} ---\n${txt}\n`;
+      count++;
+    }catch{}
+  }
+  if(count===0)ctx+='(No files in project yet — this is a fresh project)\n';
+  ctx+='=== END PROJECT FILES ===\n';
+  return ctx;
+}
+
+async function classifyAndResolve(rojoPath){
+  // Parse paths like: src/server/SprintSystem.server.luau or ServerScriptService/SprintSystem
+  let parts=rojoPath.replace(/^\s+|\s+$/g,'').split('/');
+  let dirPath,fileName;
+  // Handle Roblox service names: ServerScriptService/Foo → src/server/Foo.server.luau
+  if(SERVICE_PATH_MAP[parts[0]]){
+    const mapped=SERVICE_PATH_MAP[parts[0]].split('/');
+    const suffix=SERVICE_SUFFIX_MAP[parts[0]]||'.luau';
+    fileName=parts.slice(1).join('/')||'Script';
+    if(!fileName.includes('.lua'))fileName+=suffix;
+    dirPath=mapped;
+  }
+  // Handle src/server/Foo.server.luau format
+  else if(parts[0]==='src'&&parts.length>=3){
+    dirPath=parts.slice(0,-1);
+    fileName=parts[parts.length-1];
+    if(!fileName.includes('.lua')){
+      if(parts[1]==='server')fileName+='.server.luau';
+      else if(parts[1]==='client')fileName+='.client.luau';
+      else fileName+='.luau';
+    }
+  }
+  // Fallback: guess from script type markers
+  else{
+    dirPath=['src','server'];
+    fileName=parts[parts.length-1]||'Script';
+    if(!fileName.includes('.lua'))fileName+='.server.luau';
+  }
+  return {dirPath,fileName};
+}
+
+async function createFileAtPath(rojoPath,code){
+  if(!rojoDirHandle){showToast('Connect a folder first','error');return null}
+  try{
+    const{dirPath,fileName}=await classifyAndResolve(rojoPath);
+    // Navigate/create directory chain
+    let dir=rojoDirHandle;
+    for(const seg of dirPath){
+      try{dir=await dir.getDirectoryHandle(seg,{create:true})}catch{break}
+    }
+    // Create and write file
+    const h=await dir.getFileHandle(fileName,{create:true});
+    const w=await h.createWritable();await w.write(code);await w.close();
+    // Refresh tree and open the file
+    await refreshFileTree();
+    const fullPath=dirPath.join('/')+'/'+fileName;
+    openFile(fullPath,fileName,h);
+    return {path:fullPath,name:fileName};
+  }catch(e){console.error('createFileAtPath:',e);showToast(`Failed: ${e.message}`,'error');return null}
+}
+
+async function processAIFileOps(resp){
+  // Extract ALL code blocks with Rojo paths
+  const blocks=[];
+  const regex=/```(?:luau|lua)\n([\s\S]*?)```/g;
+  let match;
+  while((match=regex.exec(resp))!==null){
+    const code=match[1];
+    // Look for Rojo path comment
+    const pathMatch=code.match(/--\s*Rojo\s*path:\s*([^\n]+)/i);
+    if(pathMatch){
+      blocks.push({path:pathMatch[1].trim(),code:code});
+    }else{
+      // Try to classify from script type
+      const typeMatch=code.match(/--\s*\[(ServerScript|LocalScript|ModuleScript)\]/i);
+      const nameMatch=code.match(/--\s*([A-Z][a-zA-Z0-9_]+)/); 
+      if(typeMatch){
+        let sub='server';
+        if(typeMatch[1]==='LocalScript')sub='client';
+        if(typeMatch[1]==='ModuleScript')sub='shared';
+        const name=nameMatch?nameMatch[1]:'Script';
+        blocks.push({path:`src/${sub}/${name}`,code:code});
+      }
+    }
+  }
+  if(!blocks.length)return 0;
+  let created=0;
+  for(const block of blocks){
+    const result=await createFileAtPath(block.path,block.code);
+    if(result){
+      created++;
+      saveVer(result.path,block.code,'AI Created');
+    }
+  }
+  if(created>0){
+    showToast(`📁 ${created} file${created>1?'s':''} created/updated`,'success');
+    await refreshFileTree();
+  }
+  return created;
+}
+
+async function readFileByPath(path){
+  const handle=fileHandles.get(path);
+  if(!handle)return null;
+  try{const f=await handle.getFile();return await f.text()}catch{return null}
+}
+
 // ═══ VERSIONS ═══
 function saveVer(p,c,l){if(!versionHistory[p])versionHistory[p]=[];versionHistory[p].push({time:Date.now(),content:c,label:l||'Edit'});if(versionHistory[p].length>30)versionHistory[p].shift()}
 function openVersions(){
@@ -730,8 +881,15 @@ async function sendMessage(override){
   inp.value='';autoR(inp);
   appendMsg('user',txt);
   let ctx=txt;
-  if((currentMode==='agentic'||currentMode==='debugging')&&activeTab!==null&&editor){
-    ctx=`[Editing: ${openTabs[activeTab].name}]\n\`\`\`luau\n${editor.getValue()}\n\`\`\`\n\nRequest: ${txt}`;
+  // Build rich context with current file + project files
+  if(currentMode==='agentic'||currentMode==='debugging'){
+    let fileCtx='';
+    if(activeTab!==null&&editor){
+      fileCtx=`\n[Currently Editing: ${openTabs[activeTab].name}]\n\`\`\`luau\n${editor.getValue()}\n\`\`\`\n`;
+    }
+    // Gather ALL project files for context
+    const projCtx=await gatherProjectContext();
+    ctx=`${fileCtx}${projCtx}\nRequest: ${txt}`;
   }
   messages.push({role:'user',content:ctx});
   setTyping(true);
@@ -801,14 +959,13 @@ async function sendMessage(override){
     }
     messages.push({role:'assistant',content:resp});
 
-    if(currentMode==='agentic'){
-      const cm=resp.match(/```(?:luau|lua)\n([\s\S]+?)```/);
-      if(cm){
-        if(activeTab!==null)showAIBanner(cm[1]);
-        if(rojoDirHandle&&cm){
-          const hm=cm[1].match(/--\s*Rojo path:\s*src\/(?:server|client|shared)\/([a-zA-Z0-9_\-\.]+)/i);
-          if(hm)await saveToRojo(hm[1],cm[1],cm[1]);
-        }
+    if(currentMode==='agentic'||currentMode==='debugging'){
+      // Process ALL code blocks — auto-create/edit files
+      const filesCreated=await processAIFileOps(resp);
+      // If no files were auto-created but there's a code block, offer to apply to current file
+      if(filesCreated===0){
+        const cm=resp.match(/```(?:luau|lua)\n([\s\S]+?)```/);
+        if(cm&&activeTab!==null)showAIBanner(cm[1]);
       }
     }
   }catch(e){removeThinking(thinkEl);setTyping(false);appendMsg('ai',`❌ ${e.message}`);return}
