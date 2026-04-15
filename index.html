@@ -221,6 +221,15 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;displ
 .vl-restore:hover{background:var(--lime-dim)}
 
 ::-webkit-scrollbar{width:3px;height:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+#toast{position:fixed;bottom:-50px;left:50%;transform:translateX(-50%);background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 16px;display:flex;align-items:center;gap:6px;font-size:11px;font-family:'JetBrains Mono',monospace;z-index:300;transition:bottom .3s ease;box-shadow:0 4px 20px rgba(0,0,0,.4)}
+#toast.show{bottom:36px}
+#toast.success #ti{color:var(--green)}
+#toast.error #ti{color:var(--red)}
+.s-save{cursor:pointer;transition:all .15s;padding:1px 6px;border-radius:3px;display:flex;align-items:center;gap:3px}
+.s-save.saved{color:var(--green)}
+.s-save.unsaved{color:var(--orange);background:var(--orange-dim)}
+.multi-agent-tag{font-size:8px;background:var(--purple-dim);border:1px solid rgba(139,122,247,0.2);color:var(--purple);padding:1px 4px;border-radius:3px;font-family:'JetBrains Mono',monospace}
+.mercury-tag{font-size:8px;background:var(--blue-dim);border:1px solid rgba(96,165,250,0.2);color:var(--blue);padding:1px 4px;border-radius:3px;font-family:'JetBrains Mono',monospace}
 </style>
 </head>
 <body>
@@ -265,7 +274,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;displ
       <div class="empty-ed" id="empty-ed"><div class="empty-ed-icon">🍋</div><h3>Squeeze IDE</h3><p>Connect a Rojo folder or create a file to start coding Luau.</p></div>
       <div id="monaco-editor" style="display:none"></div>
     </div>
-    <div class="vbar"><span id="vb-cur">Ln 1, Col 1</span><span>Luau</span><span class="sp"></span><button class="vb" onclick="openVersions()">⏱ History</button><button class="vb primary" onclick="saveFile()">💾 Save</button></div>
+    <div class="vbar"><span id="vb-cur">Ln 1, Col 1</span><span>Luau</span><span class="sp"></span><button class="vb" onclick="openVersions()">⏱ History</button></div>
   </div>
 
   <!-- CHAT -->
@@ -308,9 +317,10 @@ Use the mode selector to switch between:
 <div class="sbar">
   <span id="s-rojo">⊘ Disconnected</span>
   <span id="s-files">0 files</span>
+  <span id="s-save" class="s-save saved" onclick="saveFile()" title="Save current file (Ctrl+S)">💾 Saved</span>
   <span class="sp"></span>
   <span class="s-mode" id="s-mode" data-m="agentic">AGENTIC</span>
-  <span id="s-model">Claude 3.5 Sonnet</span>
+  <span id="s-model">Claude Opus 4.6</span>
 </div>
 
 <!-- TOAST -->
@@ -374,29 +384,32 @@ let rojoDirHandle=null,fileHandles=new Map,openTabs=[],activeTab=null,editor=nul
 let pendingAICode=null,versionHistory={},syncInterval=null,modifiedFilesCount=0;
 let apiKey=localStorage.getItem('sq_api_key')||'';
 let provider=localStorage.getItem('sq_provider')||'puter';
-let model=localStorage.getItem('sq_model')||'anthropic/claude-3.5-sonnet';
-let puterModel=localStorage.getItem('sq_puter_model')||'claude-3-5-sonnet';
+let model=localStorage.getItem('sq_model')||'anthropic/claude-opus-4-6';
+let puterModel=localStorage.getItem('sq_puter_model')||'anthropic/claude-opus-4-6';
 let currentMode='agentic',messages=[],isTyping=false,puterReady=false;
 let customModels=JSON.parse(localStorage.getItem('sq_custom_models')||'null');
 
 const PUTER_MODELS=[
-  {value:'claude-3-5-sonnet',label:'Claude 3.5 Sonnet'},
-  {value:'claude-sonnet-4',label:'Claude Sonnet 4'},
-  {value:'claude-sonnet-4-5',label:'Claude Sonnet 4.5'},
-  {value:'claude-opus-4-5',label:'Claude Opus 4.5 ✦'},
-  {value:'gpt-4o',label:'GPT-4o'},
-  {value:'gpt-4o-mini',label:'GPT-4o Mini'},
-  {value:'gemini-flash-1.5',label:'Gemini 1.5 Flash'},
+  {value:'anthropic/claude-opus-4-6',label:'Claude Opus 4.6 ✦'},
+  {value:'anthropic/claude-sonnet-4-6',label:'Claude Sonnet 4.6'},
+  {value:'x-ai/grok-4.20-multi-agent',label:'Grok 4.20 Multi-Agent 🤖'},
+  {value:'kwaipilot/kat-coder-pro-v2',label:'Kat Coder Pro V2'},
+  {value:'openai/gpt-5.4-pro',label:'GPT-5.4 Pro'},
+  {value:'openai/gpt-5.3-codex',label:'GPT-5.3 Codex'},
+  {value:'minimax/minimax-m2.7',label:'MiniMax M2.7'},
+  {value:'inception/mercury-2',label:'Mercury 2 🔭'},
+  {value:'inception/mercury-coder',label:'Mercury Coder 💻'},
 ];
 const DEFAULT_OR_MODELS=[
-  {value:'anthropic/claude-3.5-sonnet',label:'Claude 3.5 Sonnet'},
-  {value:'anthropic/claude-sonnet-4',label:'Claude Sonnet 4'},
-  {value:'anthropic/claude-sonnet-4-5',label:'Claude Sonnet 4.5'},
-  {value:'anthropic/claude-opus-4',label:'Claude Opus 4.5 ✦'},
-  {value:'openai/gpt-4o',label:'GPT-4o'},
-  {value:'openai/gpt-4o-mini',label:'GPT-4o Mini'},
-  {value:'google/gemini-flash-1.5',label:'Gemini 1.5 Flash'},
-  {value:'deepseek/deepseek-coder',label:'DeepSeek Coder'},
+  {value:'anthropic/claude-opus-4-6',label:'Claude Opus 4.6 ✦'},
+  {value:'anthropic/claude-sonnet-4-6',label:'Claude Sonnet 4.6'},
+  {value:'x-ai/grok-4.20-multi-agent',label:'Grok 4.20 Multi-Agent 🤖'},
+  {value:'kwaipilot/kat-coder-pro-v2',label:'Kat Coder Pro V2'},
+  {value:'openai/gpt-5.4-pro',label:'GPT-5.4 Pro'},
+  {value:'openai/gpt-5.3-codex',label:'GPT-5.3 Codex'},
+  {value:'minimax/minimax-m2.7',label:'MiniMax M2.7'},
+  {value:'inception/mercury-2',label:'Mercury 2 🔭'},
+  {value:'inception/mercury-coder',label:'Mercury Coder 💻'},
 ];
 function getORModels(){return customModels&&customModels.length?customModels:DEFAULT_OR_MODELS}
 
@@ -435,6 +448,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   initMonaco();
   initPuter();
   if(!apiKey&&provider==='openrouter')setTimeout(()=>openSettings(),500);
+  document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();saveFile()}});
 });
 
 // ═══ MONACO ═══
@@ -635,6 +649,9 @@ function updateModCount(){
   const b=document.getElementById('files-modified-badge');
   if(c>0){b.style.display='flex';document.getElementById('files-mod-count').textContent=`${c} file${c>1?'s':''} modified`}
   else b.style.display='none';
+  const sv=document.getElementById('s-save');
+  if(c>0){sv.className='s-save unsaved';sv.innerHTML='💾 Unsaved'}
+  else{sv.className='s-save saved';sv.innerHTML='💾 Saved'}
 }
 
 async function saveFile(){
@@ -741,13 +758,46 @@ async function sendMessage(override){
           try{resp+=JSON.parse(d).choices?.[0]?.delta?.content||'';updateStreamMsg(aiEl,resp)}catch{}}}
     }else{
       if(typeof puter==='undefined')throw new Error('Puter.js not loaded.');
+      const selectedModel=document.getElementById('model-sel').value;
       const pm=[{role:'system',content:sys},...messages.slice(-12)];
       removeThinking(thinkEl);
       const aiEl=appendStreamMsg();
-      try{const st=await puter.ai.chat(pm,{model:document.getElementById('model-sel').value,stream:true});
-        for await(const p of st){const c=p?.text??p?.delta?.content??p?.choices?.[0]?.delta?.content??'';if(c){resp+=c;updateStreamMsg(aiEl,resp)}}}
-      catch{const r=await puter.ai.chat(pm,{model:document.getElementById('model-sel').value});
-        resp=typeof r==='string'?r:r?.message?.content??r?.choices?.[0]?.message?.content??String(r);updateStreamMsg(aiEl,resp)}
+      // === GROK 4.20 MULTI-AGENT: Mercury-2 decomposes → 4 parallel Grok agents ===
+      if(selectedModel==='x-ai/grok-4.20-multi-agent'){
+        updateStreamMsg(aiEl,'🔄 **Mercury-2** is decomposing your task into 4 sub-tasks...');
+        try{
+          const decomp=await puter.ai.chat([{role:'system',content:'You are a task decomposition agent. Break the following coding task into exactly 4 logical, non-overlapping sub-tasks that together fully address the request. Output ONLY a JSON array of 4 strings. No markdown, no explanation, no code fences.'},{role:'user',content:ctx}],{model:'inception/mercury-2'});
+          const rawD=typeof decomp==='string'?decomp:decomp?.message?.content??decomp?.choices?.[0]?.message?.content??'';
+          let subtasks;try{subtasks=JSON.parse(rawD.match(/\[[\s\S]*\]/)?.[0]||'[]')}catch{subtasks=[]}
+          if(subtasks.length!==4){const q=ctx;subtasks=[q+' (Part 1: core logic)',q+' (Part 2: error handling)',q+' (Part 3: integration)',q+' (Part 4: optimization)']}
+          updateStreamMsg(aiEl,'🚀 Dispatching to **4 Grok agents** in parallel...\n\n'+subtasks.map((s,i)=>'**Agent '+(i+1)+':** '+s).join('\n'));
+          const results=await Promise.all(subtasks.map((task,i)=>puter.ai.chat([{role:'system',content:sys+'\nYou are Agent '+(i+1)+' of 4 in a multi-agent system. Your specific sub-task: '+task+'\nFocus ONLY on your sub-task. Be thorough and precise.'},...messages.slice(-8),{role:'user',content:task}],{model:'x-ai/grok-4.20-multi-agent'})));
+          resp='# 🤖 Multi-Agent Results\n\n*Task decomposed by Mercury-2, executed by 4 Grok agents*\n';
+          results.forEach((r,i)=>{const t=typeof r==='string'?r:r?.message?.content??r?.choices?.[0]?.message?.content??'';resp+='\n---\n## Agent '+(i+1)+' — '+subtasks[i]+'\n\n'+t});
+          updateStreamMsg(aiEl,resp);
+        }catch(e2){resp='❌ Multi-agent error: '+e2.message;updateStreamMsg(aiEl,resp)}
+      }
+      // === MERCURY DUO: Mercury-2 + Mercury-Coder collaborate for planning/debugging ===
+      else if((selectedModel==='inception/mercury-2'||selectedModel==='inception/mercury-coder')&&(currentMode==='planning'||currentMode==='debugging')){
+        updateStreamMsg(aiEl,'🔭 **Mercury Duo** — running Mercury-2 + Mercury-Coder in parallel...');
+        try{
+          const [analysis,codeReview]=await Promise.all([
+            puter.ai.chat([{role:'system',content:sys+'\n\nYou are Mercury-2, the architecture and high-level analysis agent. Focus on system design, patterns, data flow, strategic recommendations, and overall structure.'},...messages.slice(-8),{role:'user',content:ctx}],{model:'inception/mercury-2'}),
+            puter.ai.chat([{role:'system',content:sys+'\n\nYou are Mercury-Coder, the code specialist agent. Focus on implementation details, code quality, concrete fixes, specific code examples, and technical accuracy.'},...messages.slice(-8),{role:'user',content:ctx}],{model:'inception/mercury-coder'})
+          ]);
+          const aT=typeof analysis==='string'?analysis:analysis?.message?.content??analysis?.choices?.[0]?.message?.content??'';
+          const cT=typeof codeReview==='string'?codeReview:codeReview?.message?.content??codeReview?.choices?.[0]?.message?.content??'';
+          resp='# 🔭 Mercury-2 — '+(currentMode==='debugging'?'Bug Analysis':'Architecture Plan')+'\n\n'+aT+'\n\n---\n\n# 💻 Mercury-Coder — '+(currentMode==='debugging'?'Fix Implementation':'Code Blueprint')+'\n\n'+cT;
+          updateStreamMsg(aiEl,resp);
+        }catch(e2){resp='❌ Mercury collaboration error: '+e2.message;updateStreamMsg(aiEl,resp)}
+      }
+      // === STANDARD PUTER MODEL ===
+      else{
+        try{const st=await puter.ai.chat(pm,{model:selectedModel,stream:true});
+          for await(const p of st){const c=p?.text??p?.delta?.content??p?.choices?.[0]?.delta?.content??'';if(c){resp+=c;updateStreamMsg(aiEl,resp)}}}
+        catch{const r=await puter.ai.chat(pm,{model:selectedModel});
+          resp=typeof r==='string'?r:r?.message?.content??r?.choices?.[0]?.message?.content??String(r);updateStreamMsg(aiEl,resp)}
+      }
     }
     messages.push({role:'assistant',content:resp});
 
