@@ -63,9 +63,14 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;displ
 .fi:hover{background:var(--bg3);color:var(--text)}
 .fi.active{background:var(--lime-dim);color:var(--lime)}
 .fi.dir{font-weight:600}
+.fi.ai-created .fi-name{color:var(--lime)}
+.fi.ai-modified .fi-name{color:var(--orange)}
 .fi-icon{font-size:12px;flex-shrink:0;width:16px;text-align:center}
 .fi-indent{width:12px;flex-shrink:0}
 .fi-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fi-badge{font-size:7px;padding:1px 4px;border-radius:3px;font-weight:700;flex-shrink:0}
+.fi-badge.new{background:var(--lime-dim);color:var(--lime);border:1px solid rgba(168,228,77,0.25)}
+.fi-badge.mod{background:var(--orange-dim);color:var(--orange);border:1px solid rgba(245,158,11,0.25)}
 .exp-empty{padding:16px 10px;text-align:center;font-size:10px;color:var(--text-muted);line-height:1.6}
 .conn-btn{margin-top:8px;background:var(--bg4);border:1px solid var(--lime);border-radius:7px;color:var(--lime);font-size:10px;font-weight:600;padding:7px 12px;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:4px;transition:all .15s}
 .conn-btn:hover{background:var(--lime-dim)}
@@ -136,6 +141,20 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;displ
 
 /* Files modified badge in messages */
 .m-files{margin-top:4px;font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--orange);display:flex;align-items:center;gap:4px}
+
+/* File operation cards in chat (replaces code blocks) */
+.file-op-card{background:var(--bg3);border:1px solid var(--border);border-radius:8px;margin-top:6px;overflow:hidden;cursor:pointer;transition:all .15s}
+.file-op-card:hover{border-color:var(--lime);background:var(--bg4)}
+.file-op-card-head{display:flex;align-items:center;gap:8px;padding:8px 12px}
+.file-op-icon{font-size:16px}
+.file-op-info{flex:1;min-width:0}
+.file-op-name{font-size:11px;font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file-op-path{font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--text-muted);margin-top:1px}
+.file-op-badge{font-size:8px;padding:2px 6px;border-radius:4px;font-weight:700;flex-shrink:0}
+.file-op-badge.created{background:var(--lime-dim);color:var(--lime);border:1px solid rgba(168,228,77,0.2)}
+.file-op-badge.modified{background:var(--orange-dim);color:var(--orange);border:1px solid rgba(245,158,11,0.2)}
+.file-op-lines{font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--text-muted);padding:0 12px 8px;display:flex;gap:8px}
+.file-ops-summary{margin-top:8px;padding:8px 12px;background:var(--lime-dim);border:1px solid rgba(168,228,77,0.15);border-radius:8px;font-size:11px;color:var(--lime);display:flex;align-items:center;gap:6px;font-weight:600}
 
 /* Thinking indicator */
 .thinking-wrap{margin-top:4px;border:1px solid var(--border);border-radius:6px;overflow:hidden}
@@ -637,8 +656,16 @@ async function buildTree(dir,parent,base,depth){
       if(!/\.(lua|luau|json|toml)$/i.test(e.name))continue;
       const h=await dir.getFileHandle(e.name);
       fileHandles.set(p,h);
-      const d=document.createElement('div');d.className='fi';d.dataset.depth=depth;d.dataset.path=p;
-      d.innerHTML=`${'<span class="fi-indent"></span>'.repeat(depth)}<span class="fi-icon">${e.name.endsWith('.json')?'⚙':'📄'}</span><span class="fi-name">${e.name}</span>`;
+      const isAI=aiCreatedFiles.has(p);
+      const isModTab=openTabs.find(t=>t.path===p&&t.modified);
+      const d=document.createElement('div');
+      d.className='fi'+(isAI?' ai-created':'')+(isModTab?' ai-modified':'');
+      d.dataset.depth=depth;d.dataset.path=p;
+      let badge='';
+      if(isAI)badge='<span class="fi-badge new">AI</span>';
+      else if(isModTab)badge='<span class="fi-badge mod">●</span>';
+      const icon=e.name.endsWith('.json')?'⚙':e.name.endsWith('.toml')?'🛠':isAI?'✨':'📄';
+      d.innerHTML=`${'<span class="fi-indent"></span>'.repeat(depth)}<span class="fi-icon">${icon}</span><span class="fi-name">${e.name}</span>${badge}`;
       d.onclick=()=>openFile(p,e.name,h);
       parent.appendChild(d);
     }
@@ -740,12 +767,35 @@ async function saveToRojo(fname,code,ctx){
 }
 
 // ═══ AUTONOMOUS FILE OPERATIONS ═══
+let aiCreatedFiles=new Set();
+
+async function gatherFolderTree(dir,prefix='',depth=0){
+  if(depth>4)return '';
+  let tree='';const entries=[];
+  try{for await(const e of dir.values())entries.push(e)}catch{return ''}
+  entries.sort((a,b)=>{if(a.kind!==b.kind)return a.kind==='directory'?-1:1;return a.name.localeCompare(b.name)});
+  for(const e of entries){
+    if(e.name.startsWith('.'))continue;
+    const indent='  '.repeat(depth);
+    if(e.kind==='directory'){
+      tree+=`${indent}📁 ${e.name}/\n`;
+      try{const sub=await dir.getDirectoryHandle(e.name);tree+=await gatherFolderTree(sub,prefix+e.name+'/',depth+1)}catch{}
+    }else{
+      if(/\.(lua|luau|json|toml)$/i.test(e.name))tree+=`${indent}📄 ${e.name}\n`;
+    }
+  }
+  return tree;
+}
+
 async function gatherProjectContext(){
   if(!rojoDirHandle)return '';
-  let ctx='\n\n=== PROJECT FILES ===\n';
+  let ctx='\n\n=== FOLDER STRUCTURE ===\n';
+  ctx+=await gatherFolderTree(rojoDirHandle);
+  ctx+='=== END FOLDER STRUCTURE ===\n';
+  ctx+='\n=== PROJECT FILES ===\n';
   let count=0;
   for(const[path,handle]of fileHandles){
-    if(count>=20)break; // cap to avoid token overflow
+    if(count>=20)break;
     try{
       const f=await handle.getFile();const txt=await f.text();
       if(txt.length>8000)ctx+=`\n--- ${path} (${txt.length} chars, truncated) ---\n${txt.slice(0,4000)}\n...truncated...\n`;
@@ -753,16 +803,14 @@ async function gatherProjectContext(){
       count++;
     }catch{}
   }
-  if(count===0)ctx+='(No files in project yet — this is a fresh project)\n';
+  if(count===0)ctx+='(No files in project yet — this is a fresh project. You should create files!)\n';
   ctx+='=== END PROJECT FILES ===\n';
   return ctx;
 }
 
 async function classifyAndResolve(rojoPath){
-  // Parse paths like: src/server/SprintSystem.server.luau or ServerScriptService/SprintSystem
   let parts=rojoPath.replace(/^\s+|\s+$/g,'').split('/');
   let dirPath,fileName;
-  // Handle Roblox service names: ServerScriptService/Foo → src/server/Foo.server.luau
   if(SERVICE_PATH_MAP[parts[0]]){
     const mapped=SERVICE_PATH_MAP[parts[0]].split('/');
     const suffix=SERVICE_SUFFIX_MAP[parts[0]]||'.luau';
@@ -770,7 +818,6 @@ async function classifyAndResolve(rojoPath){
     if(!fileName.includes('.lua'))fileName+=suffix;
     dirPath=mapped;
   }
-  // Handle src/server/Foo.server.luau format
   else if(parts[0]==='src'&&parts.length>=3){
     dirPath=parts.slice(0,-1);
     fileName=parts[parts.length-1];
@@ -780,7 +827,6 @@ async function classifyAndResolve(rojoPath){
       else fileName+='.luau';
     }
   }
-  // Fallback: guess from script type markers
   else{
     dirPath=['src','server'];
     fileName=parts[parts.length-1]||'Script';
@@ -793,15 +839,12 @@ async function createFileAtPath(rojoPath,code){
   if(!rojoDirHandle){showToast('Connect a folder first','error');return null}
   try{
     const{dirPath,fileName}=await classifyAndResolve(rojoPath);
-    // Navigate/create directory chain
     let dir=rojoDirHandle;
     for(const seg of dirPath){
       try{dir=await dir.getDirectoryHandle(seg,{create:true})}catch{break}
     }
-    // Create and write file
     const h=await dir.getFileHandle(fileName,{create:true});
     const w=await h.createWritable();await w.write(code);await w.close();
-    // Refresh tree and open the file
     await refreshFileTree();
     const fullPath=dirPath.join('/')+'/'+fileName;
     openFile(fullPath,fileName,h);
@@ -810,43 +853,81 @@ async function createFileAtPath(rojoPath,code){
 }
 
 async function processAIFileOps(resp){
-  // Extract ALL code blocks with Rojo paths
   const blocks=[];
   const regex=/```(?:luau|lua)\n([\s\S]*?)```/g;
   let match;
   while((match=regex.exec(resp))!==null){
     const code=match[1];
-    // Look for Rojo path comment
     const pathMatch=code.match(/--\s*Rojo\s*path:\s*([^\n]+)/i);
     if(pathMatch){
-      blocks.push({path:pathMatch[1].trim(),code:code});
+      blocks.push({path:pathMatch[1].trim(),code:code,isExisting:false});
     }else{
-      // Try to classify from script type
       const typeMatch=code.match(/--\s*\[(ServerScript|LocalScript|ModuleScript)\]/i);
-      const nameMatch=code.match(/--\s*([A-Z][a-zA-Z0-9_]+)/); 
+      const nameMatch=code.match(/--\s*([A-Z][a-zA-Z0-9_]+)/);
       if(typeMatch){
         let sub='server';
         if(typeMatch[1]==='LocalScript')sub='client';
         if(typeMatch[1]==='ModuleScript')sub='shared';
         const name=nameMatch?nameMatch[1]:'Script';
-        blocks.push({path:`src/${sub}/${name}`,code:code});
+        blocks.push({path:`src/${sub}/${name}`,code:code,isExisting:false});
       }
     }
   }
-  if(!blocks.length)return 0;
+  if(!blocks.length)return {count:0,files:[]};
+  for(const block of blocks){
+    const{dirPath,fileName}=await classifyAndResolve(block.path);
+    const fullPath=dirPath.join('/')+'/'+fileName;
+    block.resolvedPath=fullPath;
+    block.resolvedName=fileName;
+    block.isExisting=fileHandles.has(fullPath);
+  }
   let created=0;
+  const results=[];
   for(const block of blocks){
     const result=await createFileAtPath(block.path,block.code);
     if(result){
       created++;
-      saveVer(result.path,block.code,'AI Created');
+      aiCreatedFiles.add(result.path);
+      saveVer(result.path,block.code,block.isExisting?'AI Modified':'AI Created');
+      const lines=block.code.split('\n').length;
+      results.push({name:result.name,path:result.path,lines:lines,isNew:!block.isExisting});
     }
   }
   if(created>0){
-    showToast(`📁 ${created} file${created>1?'s':''} created/updated`,'success');
+    showToast(`📁 ${created} file${created>1?'s':''} ${blocks.some(b=>b.isExisting)?'updated':'created'}`,'success');
     await refreshFileTree();
   }
-  return created;
+  return {count:created,files:results};
+}
+
+function buildFileOpsHtml(files){
+  if(!files||!files.length)return '';
+  let html='<div style="display:flex;flex-direction:column;gap:4px;margin-top:6px">';
+  for(const f of files){
+    html+=`<div class="file-op-card" onclick="openFileByPath('${f.path}')">`;
+    html+=`<div class="file-op-card-head">`;
+    html+=`<span class="file-op-icon">${f.isNew?'📄':'✏️'}</span>`;
+    html+=`<div class="file-op-info"><div class="file-op-name">${f.name}</div><div class="file-op-path">${f.path}</div></div>`;
+    html+=`<span class="file-op-badge ${f.isNew?'created':'modified'}">${f.isNew?'CREATED':'MODIFIED'}</span>`;
+    html+=`</div>`;
+    html+=`<div class="file-op-lines">📏 ${f.lines} lines</div>`;
+    html+=`</div>`;
+  }
+  html+=`</div>`;
+  html+=`<div class="file-ops-summary">✨ ${files.length} file${files.length>1?'s':''} written to project — click to view</div>`;
+  return html;
+}
+
+function stripCodeBlocksFromResp(text){
+  return text.replace(/```(?:luau|lua)\n[\s\S]*?```/g,'').replace(/\n{3,}/g,'\n\n').trim();
+}
+
+async function openFileByPath(path){
+  const handle=fileHandles.get(path);
+  if(handle){
+    const name=path.split('/').pop();
+    openFile(path,name,handle);
+  }
 }
 
 async function readFileByPath(path){
@@ -881,20 +962,17 @@ async function sendMessage(override){
   inp.value='';autoR(inp);
   appendMsg('user',txt);
   let ctx=txt;
-  // Build rich context with current file + project files
   if(currentMode==='agentic'||currentMode==='debugging'){
     let fileCtx='';
     if(activeTab!==null&&editor){
       fileCtx=`\n[Currently Editing: ${openTabs[activeTab].name}]\n\`\`\`luau\n${editor.getValue()}\n\`\`\`\n`;
     }
-    // Gather ALL project files for context
     const projCtx=await gatherProjectContext();
     ctx=`${fileCtx}${projCtx}\nRequest: ${txt}`;
   }
   messages.push({role:'user',content:ctx});
   setTyping(true);
 
-  // Show thinking
   const thinkEl=showThinking();
 
   try{
@@ -920,7 +998,6 @@ async function sendMessage(override){
       const pm=[{role:'system',content:sys},...messages.slice(-12)];
       removeThinking(thinkEl);
       const aiEl=appendStreamMsg();
-      // === GROK 4.20 MULTI-AGENT: Mercury-2 decomposes → 4 parallel Grok agents ===
       if(selectedModel==='x-ai/grok-4.20-multi-agent'){
         updateStreamMsg(aiEl,'🔄 **Mercury-2** is decomposing your task into 4 sub-tasks...');
         try{
@@ -935,7 +1012,6 @@ async function sendMessage(override){
           updateStreamMsg(aiEl,resp);
         }catch(e2){resp='❌ Multi-agent error: '+e2.message;updateStreamMsg(aiEl,resp)}
       }
-      // === MERCURY DUO: Mercury-2 + Mercury-Coder collaborate for planning/debugging ===
       else if((selectedModel==='inception/mercury-2'||selectedModel==='inception/mercury-coder')&&(currentMode==='planning'||currentMode==='debugging')){
         updateStreamMsg(aiEl,'🔭 **Mercury Duo** — running Mercury-2 + Mercury-Coder in parallel...');
         try{
@@ -949,7 +1025,6 @@ async function sendMessage(override){
           updateStreamMsg(aiEl,resp);
         }catch(e2){resp='❌ Mercury collaboration error: '+e2.message;updateStreamMsg(aiEl,resp)}
       }
-      // === STANDARD PUTER MODEL ===
       else{
         try{const st=await puter.ai.chat(pm,{model:selectedModel,stream:true});
           for await(const p of st){const c=p?.text??p?.delta?.content??p?.choices?.[0]?.delta?.content??'';if(c){resp+=c;updateStreamMsg(aiEl,resp)}}}
@@ -960,10 +1035,18 @@ async function sendMessage(override){
     messages.push({role:'assistant',content:resp});
 
     if(currentMode==='agentic'||currentMode==='debugging'){
-      // Process ALL code blocks — auto-create/edit files
-      const filesCreated=await processAIFileOps(resp);
-      // If no files were auto-created but there's a code block, offer to apply to current file
-      if(filesCreated===0){
+      const result=await processAIFileOps(resp);
+      if(result.count>0){
+        const streamEl=document.querySelector('.stream-bub')?.closest('.m');
+        if(streamEl){
+          const b=streamEl.querySelector('.m-body');
+          const explanation=stripCodeBlocksFromResp(resp);
+          const now=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+          const explHtml=explanation?parseMsg(explanation):'';
+          const fileCardsHtml=buildFileOpsHtml(result.files);
+          b.innerHTML=`${explHtml}${fileCardsHtml}<div class="m-actions"><button class="m-act" onclick="copyMsg(this)">📋 Copy</button><button class="m-act" onclick="likeMsg(this)">👍</button><button class="m-act" onclick="dislikeMsg(this)">👎</button></div><div class="m-time">${now}</div>`;
+        }
+      }else{
         const cm=resp.match(/```(?:luau|lua)\n([\s\S]+?)```/);
         if(cm&&activeTab!==null)showAIBanner(cm[1]);
       }
